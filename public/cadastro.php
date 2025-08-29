@@ -11,25 +11,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($nome && $email && $senha) {
         // Verifica se o e-mail já está cadastrado
-        $stmt = $pdo->prepare("SELECT id FROM usuarios WHERE email = :email");
-        $stmt->execute([':email' => $email]);
+        if (strlen($senha) < 8 || !preg_match('/[\W]/', $senha)) {
+        $erro = "A senha deve ter no mínimo 8 caracteres e incluir pelo menos 1 caractere especial.";
+        }else{
+            // Verifica se o e-mail já está cadastrado
+            $stmt = $pdo->prepare("SELECT id FROM usuarios WHERE email = :email");
+            $stmt->execute([':email' => $email]);
 
-        if ($stmt->rowCount() > 0) {
-            $erro = "E-mail já cadastrado.";
-        } else {
-            // Criptografar a senha
-            $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
+            if ($stmt->rowCount() > 0) {
+                $erro = "E-mail já cadastrado.";
+            } else {
+                // Criptografar a senha
+                $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
 
-            // Inserir no banco
-            $stmt = $pdo->prepare("INSERT INTO usuarios (nome, email, senha) VALUES (:nome, :email, :senha)");
-            $stmt->execute([
-                ':nome' => $nome,
-                ':email' => $email,
-                ':senha' => $senha_hash
-            ]);
+                // Inserir no banco
+                $stmt = $pdo->prepare("INSERT INTO usuarios (nome, email, senha) VALUES (:nome, :email, :senha)");
+                $stmt->execute([
+                    ':nome' => $nome,
+                    ':email' => $email,
+                    ':senha' => $senha_hash
+                ]);
 
-            $sucesso = "Cadastro realizado com sucesso! <a href='login.php' class='alert-link'>Clique aqui para entrar</a>";
-        }
+                $sucesso = "Cadastro realizado com sucesso! <a href='login.php' class='alert-link'>Clique aqui para entrar</a>";
+            }
     } else {
         $erro = "Preencha todos os campos.";
     }
