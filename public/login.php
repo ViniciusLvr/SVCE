@@ -20,7 +20,7 @@ if (isset($_GET['recuperar_senha'])) {
 </head>
 
 <body class="bg-light">
-   <h1 class="card-title text-center"> Sistema de Vendas com Controle de Estoque</h1>
+   <h1 class="card-title text-center"> <img src="logoSVCE.png" alt="logoSVCE" style="height:60px; margin-right:10px;"> Sistema de Vendas com Controle de Estoque</h1>
     <div class="container mt-5" style="max-width: 400px;">
         <div class="card shadow">
             <div class="card-body">
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 
 <body class="bg-light">
-    <h1 class="card-title text-center" >Sistema de Vendas com Controle de Estoque</h1>
+    <h1 class="card-title text-center" > <img src="logoSVCE.png" alt="logoSVCE" style="height:60px; margin-right:10px;"> Sistema de Vendas com Controle de Estoque</h1>
     <div class="container mt-5" style="max-width: 400px;">
         <div class="card shadow">
             <div class="card-body">
