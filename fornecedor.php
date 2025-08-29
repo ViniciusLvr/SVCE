@@ -62,10 +62,12 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <input type="text" name="nome" class="form-control" placeholder="Nome" required>
                 </div>
                 <div class="col">
-                    <input type="text" name="cnpj" class="form-control" placeholder="CNPJ">
+                    <input type="text" name="cnpj" class="form-control" placeholder="CNPJ" 
+                    pattern="\d{14}" title="Digite apenas números (14 digitos)" required>
                 </div>
                 <div class="col">
-                    <input type="text" name="telefone" class="form-control" placeholder="Telefone">
+                    <input type="text" name="telefone" class="form-control" placeholder="Telefone" 
+                    pattern="\d{10,11}" title="Digite apenas números (10 ou 11 dígitos)" required>
                 </div>
             </div>
             <button type="submit" class="btn btn-success">Cadastrar</button>
