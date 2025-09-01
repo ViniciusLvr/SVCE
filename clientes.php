@@ -18,19 +18,34 @@ function excluirCliente($pdo, $id) {
     $stmt->execute([':id' => $id]);
 }
 
+function atualizarCliente($pdo, $id, $nome, $cpf_cnpj, $telefone, $endereco) {
+    $sql = "UPDATE clientes 
+            SET nome = :nome, cpf_cnpj = :cpf_cnpj, telefone = :telefone, endereco = :endereco 
+            WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        ':id' => $id,
+        ':nome' => $nome,
+        ':cpf_cnpj' => $cpf_cnpj,
+        ':telefone' => $telefone,
+        ':endereco' => $endereco
+    ]);
+}
+
 // Verifica envio do formulário de cadastro
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['nome'])) {
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_id'])) {
+    $id = $_POST['editar_id];
     $nome = $_POST['nome'] ?? '';
     $cpf_cnpj = $_POST['cpf_cnpj'] ?? '';
     $telefone = $_POST['telefone'] ?? '';
     $endereco = $_POST['endereco'] ?? '';
 
-    if ($nome && $cpf_cnpj && $telefone && $endereco) {
-        adicionarCliente($pdo, $nome, $cpf_cnpj, $telefone, $endereco);
+    if ($id && $nome && $cpf_cnpj && $telefone && $endereco) {
+        adicionarCliente($pdo, $id, $nome, $cpf_cnpj, $telefone, $endereco);
         header("Location: clientes.php");
         exit();
     } else {
-        echo "<div class='alert alert-danger'>Todos os campos são obrigatórios (Nome, CPF, Telefone e Endereço).</div>";
+        echo "<div class='alert alert-danger'>Todos os campos são obrigatórios para editar.</div>";
     }
 }
 
@@ -104,6 +119,14 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <td><?= htmlspecialchars($cliente['endereco']) ?></td>
                         <td><?= htmlspecialchars($cliente['created_at']) ?></td>
                         <td>
+                            <!-- Botão Editar (abre modal) -->
+                            <button type="buton" class="btn btn-sm btn-primary"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editarCliente<?= $cliente['id] ?>">
+                                Editar
+                            </button>
+
+                            <!-- Botão Excluir -->
                             <form method="post"
                                 onsubmit="return confirm('Tem certeza que deseja excluir este cliente?');">
                                 <input type="hidden" name="excluir_id" value="<?= htmlspecialchars($cliente['id']) ?>">
@@ -114,6 +137,49 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php endforeach; ?>
                 </tbody>
             </table>
+
+            <?php foreach ($clientes as $cliente): ?>
+<div class="modal fade" id="editarCliente<?= $cliente['id'] ?>" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post">
+        <div class="modal-header">
+          <h5 class="modal-title">Editar Cliente</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="editar_id" value="<?= $cliente['id'] ?>">
+          <div class="mb-3">
+            <label class="form-label">Nome</label>
+            <input type="text" name="nome" class="form-control" 
+                   value="<?= htmlspecialchars($cliente['nome']) ?>" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">CPF/CNPJ</label>
+            <input type="text" name="cpf_cnpj" class="form-control" 
+                   value="<?= htmlspecialchars($cliente['cpf_cnpj']) ?>" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Telefone</label>
+            <input type="text" name="telefone" class="form-control" 
+                   value="<?= htmlspecialchars($cliente['telefone']) ?>" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Endereço</label>
+            <input type="text" name="endereco" class="form-control" 
+                   value="<?= htmlspecialchars($cliente['endereco']) ?>" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<?php endforeach; ?>
+
         </div>
 
         <a href="public/painel.php" class="btn btn-danger mt-4">Voltar ao painel</a>
