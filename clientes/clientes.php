@@ -42,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_id'])) {
     $endereco = $_POST['endereco'] ?? '';
 
     if ($id && $nome && $cpf_cnpj && $telefone && $endereco) {
-        adicionarCliente($pdo, $id, $nome, $cpf_cnpj, $telefone, $endereco);
+        atualizarCliente($pdo, $id, $nome, $cpf_cnpj, $telefone, $endereco);
         header("Location: clientes.php");
         exit();
     } else {
