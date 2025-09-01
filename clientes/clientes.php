@@ -1,6 +1,6 @@
 <?php
-require_once 'config/conexao.php';
-require_once __DIR__ . "/../config/auth.php";
+require_once '../SVCE/config/conexao.php';
+require_once __DIR__ . "../SVCE/config/auth.php";
 
 function adicionarCliente($pdo, $nome, $cpf_cnpj, $telefone, $endereco) {
     $sql = "INSERT INTO clientes (nome, cpf_cnpj, telefone, endereco) VALUES (:nome, :cpf_cnpj, :telefone, :endereco)";

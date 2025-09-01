@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../config/conexao.php'; // Conexão com PDO
+require_once '../SVCE/config/conexao.php'; // Conexão com PDO
 
 if (isset($_GET['recuperar_senha'])) {
     // FORMULÁRIO DE RECUPERAR SENHA

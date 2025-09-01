@@ -1,5 +1,5 @@
 <?php
-require_once 'config/conexao.php';
+require_once '../SVCE/config/conexao.php';
 
 function adicionarFornecedor($pdo, $nome, $cnpj, $telefone) {
     $sql = "INSERT INTO fornecedor (nome, cnpj, telefone) VALUES (:nome, :cnpj, :telefone)";
