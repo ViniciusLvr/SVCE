@@ -19,19 +19,19 @@ function excluirFornecedor($pdo, $id) {
 
 // Inserção
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome'])) {
-    $nome = trim($_POST['nome']) ?? '';
+    $nome = trim($_POST['nome']);
     $cnpj = preg_replace('/\D/', '', $_POST['cnpj'] ?? '');
     $telefone = preg_replace('/\D/', '', $_POST['telefone'] ?? '');
 
-    $docValido = (strlen($documento) === 11 || srtlen($documento) === 14);
-    $telValido = (srtlen($telefone) === 10 || srtlen($telefone) === 11);
+    $docValido = (strlen($cnpj) === 11 || strlen($documento) === 14);
+    $telValido = (strlen($telefone) === 10 || strlen($telefone) === 11);
 
     if (!empty($nome) && $docValido && $telValido) {
         adicionarFornecedor($pdo, $nome, $cnpj, $telefone);
         header("Location: fornecedor.php");
         exit();
     } else {
-        echo "<div class='alert alert-danger text-center'>! Prencha corretamente: Nome, CPF/CNPJ (11 ou 14 dígitos) e Telefone (10 ou 11 dígitos).</div>;
+        echo "<div class='alert alert-danger text-center'>! Prencha corretamente: Nome, CPF/CNPJ (11 ou 14 dígitos) e Telefone (10 ou 11 dígitos).</div>";
         }
 }
 
