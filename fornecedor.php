@@ -6,7 +6,7 @@ function adicionarFornecedor($pdo, $nome, $cnpj, $telefone) {
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
         ':nome' => $nome,
-        ':cnpj' => $cnpj,
+        ':cnpj' => $cnpj, // pode ser CPF (11) ou CNPJ (14)
         ':telefone' => $telefone
     ]);
 }
@@ -19,16 +19,19 @@ function excluirFornecedor($pdo, $id) {
 
 // Inserção
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome'])) {
-    $nome = $_POST['nome'] ?? '';
+    $nome = trim($_POST['nome']) ?? '';
     $cnpj = preg_replace('/\D/', '', $_POST['cnpj'] ?? '');
     $telefone = preg_replace('/\D/', '', $_POST['telefone'] ?? '';
 
-    if (!empty($nome) && strlen($cnpj) === 14 && (strlen($telefone) === 10 || srtlen($telefone) === 11)) {
+    $docValido = (strlen($documento) === 11 || srtlen($documento) === 14);
+    $telValido = (srtlen($telefone) === 10 || srtlen($telefone) === 11);
+
+    if (!empty($nome) && $docValido && $telValido) {
         adicionarFornecedor($pdo, $nome, $cnpj, $telefone);
         header("Location: fornecedor.php");
         exit();
     } else {
-        echo "<div class='alert alert-danger text-center'>! Prencha corretamente os campos!</div>;
+        echo "<div class='alert alert-danger text-center'>! Prencha corretamente: Nome, CPF/CNPJ (11 ou 14 dígitos) e Telefone (10 ou 11 dígitos).</div>;
         }
 }
 
@@ -64,8 +67,8 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <input type="text" name="nome" class="form-control" placeholder="Nome" required>
                 </div>
                 <div class="col">
-                    <input type="text" name="cnpj" class="form-control" placeholder="CNPJ" 
-                    pattern="\d{14}" title="Digite apenas números (14 digitos)" required>
+                    <input type="text" name="cnpj" class="form-control" placeholder="CPF ou CNPJ" 
+                    pattern="\d{11}|\d{14}" title="Digite apenas números (11 para CPF ou 14 para CNPJ)" required>
                 </div>
                 <div class="col">
                     <input type="text" name="telefone" class="form-control" placeholder="Telefone" 
