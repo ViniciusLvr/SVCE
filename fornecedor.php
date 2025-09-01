@@ -21,7 +21,7 @@ function excluirFornecedor($pdo, $id) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome'])) {
     $nome = trim($_POST['nome']) ?? '';
     $cnpj = preg_replace('/\D/', '', $_POST['cnpj'] ?? '');
-    $telefone = preg_replace('/\D/', '', $_POST['telefone'] ?? '';
+    $telefone = preg_replace('/\D/', '', $_POST['telefone'] ?? '');
 
     $docValido = (strlen($documento) === 11 || srtlen($documento) === 14);
     $telValido = (srtlen($telefone) === 10 || srtlen($telefone) === 11);
