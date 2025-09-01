@@ -34,15 +34,14 @@ function atualizarCliente($pdo, $id, $nome, $cpf_cnpj, $telefone, $endereco) {
 }
 
 // Verifica envio do formulário de cadastro
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_id'])) {
-    $id = $_POST['editar_id'];
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_id']) && !isset($_POST['excluir_id'])) {
     $nome = $_POST['nome'] ?? '';
     $cpf_cnpj = $_POST['cpf_cnpj'] ?? '';
     $telefone = $_POST['telefone'] ?? '';
     $endereco = $_POST['endereco'] ?? '';
 
     if ($id && $nome && $cpf_cnpj && $telefone && $endereco) {
-        adicionarCliente($pdo, $id, $nome, $cpf_cnpj, $telefone, $endereco);
+        atualizarCliente($pdo, $id, $nome, $cpf_cnpj, $telefone, $endereco);
         header("Location: clientes.php");
         exit();
     } else {
