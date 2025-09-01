@@ -20,14 +20,16 @@ function excluirFornecedor($pdo, $id) {
 // Inserção
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome'])) {
     $nome = $_POST['nome'] ?? '';
-    $cnpj = $_POST['cnpj'] ?? '';
-    $telefone = $_POST['telefone'] ?? '';
+    $cnpj = preg_replace('/\D/', '', $_POST['cnpj'] ?? '');
+    $telefone = preg_replace('/\D/', '', $_POST['telefone'] ?? '';
 
-    if (!empty($nome)) {
+    if (!empty($nome) && strlen($cnpj) === 14 && (strlen($telefone) === 10 || srtlen($telefone) === 11)) {
         adicionarFornecedor($pdo, $nome, $cnpj, $telefone);
         header("Location: fornecedor.php");
         exit();
-    }
+    } else {
+        echo "<div class='alert alert-danger text-center'>! Prencha corretamente os campos!</div>;
+        }
 }
 
 // Exclusão
