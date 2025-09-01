@@ -16,10 +16,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }else{
             // Verifica se o e-mail já está cadastrado
             $stmt = $pdo->prepare("SELECT id FROM usuarios WHERE email = :email");
-            $stmt->execute([':email' => $email]);
+            $stmt->execute([
+                           ':email' => $email,
+                           ':nome' => $nome
+                           ]);
 
             if ($stmt->rowCount() > 0) {
-                $erro = "E-mail já cadastrado.";
+                $erro = "Usuário já cadastrado (e-mail ou nome em uso).";
             } else {
                 // Criptografar a senha
                 $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
@@ -33,6 +36,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 ]);
 
                 $sucesso = "Cadastro realizado com sucesso! <a href='login.php' class='alert-link'>Clique aqui para entrar</a>";
+                try {
+                    $stmt = $pdo->prepare("INSERT INTO usuarios (nome, email, senha) VALUES (:nome, :email, :senha)");
+                    $stmt->execute([
+                        ':nome' => $nome,
+                        ':email' => $email,
+                        ':senha' => $senha_hash
+                    ]);
+
+                    $sucesso = "Cadastro realizado com sucesso! <a href='login.php' class='alert-link'>Clique aqui para entrar</a>";
+                } catch (PDOException $e) {
+                    if ($e->getCode() == 23000) { 
+                        $erro = "E-mail já cadastrado.";
+                    } else {
+                        $erro = "Erro inesperado: " . $e->getMessage();
+                    }
+                }
+
             }
         }
     } else {
