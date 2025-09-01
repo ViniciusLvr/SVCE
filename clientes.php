@@ -25,10 +25,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['nome'])) {
     $telefone = $_POST['telefone'] ?? '';
     $endereco = $_POST['endereco'] ?? '';
 
-    if ($nome && $cpf_cnpj) {
+    if ($nome && $cpf_cnpj && $telefone && $endereco) {
         adicionarCliente($pdo, $nome, $cpf_cnpj, $telefone, $endereco);
         header("Location: clientes.php");
         exit();
+    } else {
+        echo "<div class='alert alert-danger'>Todos os campos são obrigatórios (Nome, CPF, Telefone e Endereço).</div>";
     }
 }
 
@@ -69,10 +71,10 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
             <div class="row mb-3">
                 <div class="col">
-                    <input type="text" name="telefone" class="form-control" placeholder="Telefone">
+                    <input type="text" name="telefone" class="form-control" placeholder="Telefone" required>
                 </div>
                 <div class="col">
-                    <input type="text" name="endereco" class="form-control" placeholder="Endereço">
+                    <input type="text" name="endereco" class="form-control" placeholder="Endereço" required>
                 </div>
             </div>
             <button type="submit" class="btn btn-success">Cadastrar</button>
