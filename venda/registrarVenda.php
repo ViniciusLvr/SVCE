@@ -146,7 +146,7 @@ require "config/conexao.php";
     	});
     </script>
 
-<a href="public/painel.php" class="btn btn-danger mt-4">Voltar ao painel</a>
+<a href="../public/painel.php" class="btn btn-danger mt-4">Voltar ao painel</a>
 
 
 </body>

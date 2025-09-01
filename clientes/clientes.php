@@ -1,5 +1,6 @@
 <?php
 require_once 'config/conexao.php';
+require_once __DIR__ . "/../config/auth.php";
 
 function adicionarCliente($pdo, $nome, $cpf_cnpj, $telefone, $endereco) {
     $sql = "INSERT INTO clientes (nome, cpf_cnpj, telefone, endereco) VALUES (:nome, :cpf_cnpj, :telefone, :endereco)";
@@ -34,7 +35,7 @@ function atualizarCliente($pdo, $id, $nome, $cpf_cnpj, $telefone, $endereco) {
 
 // Verifica envio do formulário de cadastro
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_id'])) {
-    $id = $_POST['editar_id];
+    $id = $_POST['editar_id'];
     $nome = $_POST['nome'] ?? '';
     $cpf_cnpj = $_POST['cpf_cnpj'] ?? '';
     $telefone = $_POST['telefone'] ?? '';
@@ -120,9 +121,9 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <td><?= htmlspecialchars($cliente['created_at']) ?></td>
                         <td>
                             <!-- Botão Editar (abre modal) -->
-                            <button type="buton" class="btn btn-sm btn-primary"
+                            <button type="button" class="btn btn-sm btn-primary"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#editarCliente<?= $cliente['id] ?>">
+                                    data-bs-target="#editarCliente<?= $cliente['id'] ?>">
                                 Editar
                             </button>
 
@@ -167,7 +168,7 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <div class="mb-3">
             <label class="form-label">Endereço</label>
             <input type="text" name="endereco" class="form-control" 
-                   value="<?= htmlspecialchars($cliente['endereco']) ?>" required>
+                   value="<?= htmlspecialchars($cliente['endereco']); ?>" required>
           </div>
         </div>
         <div class="modal-footer">
@@ -182,7 +183,7 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         </div>
 
-        <a href="public/painel.php" class="btn btn-danger mt-4">Voltar ao painel</a>
+        <a href="../public/painel.php" class="btn btn-danger mt-4">Voltar ao painel</a>
     </div>
 </body>
 

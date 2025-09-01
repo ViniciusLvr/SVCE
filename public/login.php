@@ -20,6 +20,7 @@ if (isset($_GET['recuperar_senha'])) {
 </head>
 
 <body class="bg-light">
+    img src="img/logoSVCE.png" alt="logoSVCE" style="height:60px; margin-right:10px;">
    <h1 class="card-title text-center"> <img src="img/logoSVCE.png" alt="logoSVCE" style="height:60px; margin-right:10px;"> Sistema de Vendas com Controle de Estoque</h1>
     <div class="container mt-5" style="max-width: 400px;">
         <div class="card shadow">

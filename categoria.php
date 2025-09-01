@@ -80,7 +80,7 @@ $categorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </table>
         </div>
 
-        <a href="public/painel.php" class="btn btn-danger mt-4">Voltar ao painel</a>
+        <a href="../public/painel.php" class="btn btn-danger mt-4">Voltar ao painel</a>
     </div>
 </body>
 </html>

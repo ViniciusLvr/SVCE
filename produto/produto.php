@@ -186,7 +186,7 @@ $fornecedores = $pdo->query("SELECT * FROM fornecedor")->fetchAll();
 
     <div class="container mt-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <a href="public/painel.php" class="btn btn-danger">Voltar ao painel</a>
+            <a href="../public/painel.php" class="btn btn-danger">Voltar ao painel</a>
         </div>
 </body>
 

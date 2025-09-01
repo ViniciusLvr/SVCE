@@ -21,18 +21,18 @@ function excluirFornecedor($pdo, $id) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome'])) {
     $nome = trim($_POST['nome']) ?? '';
     $cnpj = preg_replace('/\D/', '', $_POST['cnpj'] ?? '');
-    $telefone = preg_replace('/\D/', '', $_POST['telefone'] ?? '';
+    $telefone = preg_replace('/\D/', '', $_POST['telefone'] ?? '');
 
-    $docValido = (strlen($documento) === 11 || srtlen($documento) === 14);
-    $telValido = (srtlen($telefone) === 10 || srtlen($telefone) === 11);
+    $docValido = (strlen($cnpj) === 11 || strlen($cnpj) === 14);
+    $telValido = (strlen($telefone) === 10 || strlen($telefone) === 11);
 
     if (!empty($nome) && $docValido && $telValido) {
         adicionarFornecedor($pdo, $nome, $cnpj, $telefone);
         header("Location: fornecedor.php");
         exit();
     } else {
-        echo "<div class='alert alert-danger text-center'>! Prencha corretamente: Nome, CPF/CNPJ (11 ou 14 dígitos) e Telefone (10 ou 11 dígitos).</div>;
-        }
+        echo "<div class='alert alert-danger text-center'>! Preencha corretamente: Nome, CPF/CNPJ (11 ou 14 dígitos) e Telefone (10 ou 11 dígitos).</div>";
+    }
 }
 
 // Exclusão
@@ -112,7 +112,7 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </table>
         </div>
 
-        <a href="public/painel.php" class="btn btn-danger mt-4">Voltar ao painel</a>
+        <a href="../public/painel.php" class="btn btn-danger mt-4">Voltar ao painel</a>
     </div>
 </body>
 

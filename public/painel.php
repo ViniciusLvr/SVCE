@@ -24,19 +24,19 @@ require_once __DIR__ . "/../config/auth.php";
                 <a href="../categoria.php" class="btn btn-primary w-100">Gerenciar Categorias</a>
             </div>
             <div class="col-md-4">
-                <a href="../fornecedor.php" class="btn btn-primary w-100">Gerenciar Fornecedores</a>
+                <a href="../fornecedor/fornecedor.php" class="btn btn-primary w-100">Gerenciar Fornecedores</a>
             </div>
             <div class="col-md-4">
-                <a href="../produto.php" class="btn btn-primary w-100">Gerenciar Produtos</a>
+                <a href="../produto/produto.php" class="btn btn-primary w-100">Gerenciar Produtos</a>
             </div>
             <div class="col-md-4">
-                <a href="../clientes.php" class="btn btn-primary w-100">Gerenciar Clientes</a>
+                <a href="../clientes/clientes.php" class="btn btn-primary w-100">Gerenciar Clientes</a>
             </div>
             <div class="col-md-4">
-                <a href="../registrar_venda.php" class="btn btn-primary w-100">Registrar Venda</a>
+                <a href="../venda/registrarVenda.php" class="btn btn-primary w-100">Registrar Venda</a>
             </div>
             <div class="col-md-4">
-                <a href="../listar_vendas.php" class="btn btn-primary w-100">Historico de Vendas</a>
+                <a href="../venda/listarVendas.php" class="btn btn-primary w-100">Historico de Vendas</a>
             </div>
         </div>
     </div>
