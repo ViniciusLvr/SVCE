@@ -78,9 +78,12 @@ Ele permite cadastrar produtos, fornecedores e clientes, além de registrar vend
 
     http://localhost/SVCE/public/login.php
 
+---
 
 👨‍💻 Autores
 Desenvolvido por Vinicius Santos de Oliveira, Walter e Winicius
+
+---
 
 📜 Licença
 Este projeto é distribuído sob a licença MIT.
