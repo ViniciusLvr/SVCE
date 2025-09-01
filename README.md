@@ -23,29 +23,30 @@ Ele permite cadastrar produtos, fornecedores e clientes, além de registrar vend
 
 ## 📂 Estrutura do Projeto
 
-SVCE-main/
-│── categoria.php # Gerenciamento de categorias
-│── clientes/ # Módulo de clientes
-│ └── clientes.php
-│── fornecedor/ # Módulo de fornecedores
-│ └── fornecedor.php
-│── produto/ # Módulo de produtos
-│ ├── produto.php
-│ └── get_preco_produto.php
-│── venda/ # Módulo de vendas
-│ ├── registrarVenda.php
-│ ├── registrarItens.php
-│ ├── listarVendas.php
-│ └── detalhesVenda.php
-│── public/ # Telas públicas
-│ ├── login.php
-│ ├── logout.php
-│ ├── cadastro.php
-│ └── painel.php
-│── config/ # Configuração do sistema
-│ ├── conexao.php
-│ └── auth.php
-└── README.md
+- **categoria.php** → Gerenciamento de categorias  
+- **clientes/**
+  - `clientes.php` → Cadastro e listagem de clientes  
+- **fornecedor/**
+  - `fornecedor.php` → Cadastro e listagem de fornecedores  
+- **produto/**
+  - `produto.php` → Cadastro de produtos  
+  - `get_preco_produto.php` → Consulta de preço de produto  
+- **venda/**
+  - `registrarVenda.php` → Registro de vendas  
+  - `registrarItens.php` → Registro de itens das vendas  
+  - `listarVendas.php` → Listagem de vendas  
+  - `detalhesVenda.php` → Detalhes de cada venda  
+- **public/**
+  - `login.php` → Tela de login  
+  - `logout.php` → Encerrar sessão  
+  - `cadastro.php` → Cadastro de usuário  
+  - `painel.php` → Painel principal  
+- **config/**
+  - `conexao.php` → Configuração de banco de dados  
+  - `auth.php` → Sistema de autenticação  
+- **img/** → Recursos visuais (logo, ícones, etc.)  
+- **README.md** → Documentação do projeto
+
 
 
 ---
