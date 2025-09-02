@@ -3,11 +3,20 @@ session_start();
 require_once '../SVCE/config/conexao.php'; // Conexão com PDO
 
 if (isset($_GET['recuperar_senha'])) {
-    // FORMULÁRIO DE RECUPERAR SENHA
+    // FORMULÁRIO DE RECUPERAR SENHA PELO CPF
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $email = trim($_POST['email']);
-        // (Em produção: enviar e-mail de recuperação)
-        echo "<div class='alert alert-info'>Se o e-mail estiver cadastrado, um link de recuperação foi enviado.</div>";
+        $cpf = trim($_POST['cpf']);
+
+        $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE cpf = :cpf LIMIT 1");
+        $stmt->execute([':cpf' => $cpf]);
+        $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($usuario) {
+            echo "<div class='alert alert-success'>Usuário encontrado: {$usuario['nome']}. Defina sua nova senha abaixo.</div>";
+            // Aqui você pode gerar um formulário para redefinir a senha
+        } else {
+            echo "<div class='alert alert-danger'>CPF não encontrado no sistema.</div>";
+        }
     }
     ?>
 <!DOCTYPE html>
@@ -28,10 +37,10 @@ if (isset($_GET['recuperar_senha'])) {
                 <h4 class="card-title mb-4 text-center">Recuperar Senha</h4>
                 <form method="POST">
                     <div class="mb-3">
-                        <input type="email" name="email" class="form-control" placeholder="Digite seu e-mail" required>
+                        <input type="text" name="cpf" class="form-control" placeholder="Digite seu cpf" required>
                     </div>
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">Enviar link de recuperação</button>
+                        <button type="submit" class="btn btn-primary">Recuperar senha</button>
                     </div>
                 </form>
                 <p class="mt-3 text-center"><a href="login.php">Voltar ao login</a></p>
