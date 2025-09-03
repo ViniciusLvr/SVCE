@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../SVCE/config/conexao.php'; // Conexão com PDO
+require_once '../svce/config/conexao.php'; // Conexão com PDO
 
 if (isset($_GET['recuperar_senha'])) {
     // FORMULÁRIO DE RECUPERAR SENHA PELO CPF
@@ -29,7 +29,7 @@ if (isset($_GET['recuperar_senha'])) {
 </head>
 
 <body class="bg-light">
-    img src="img/logoSVCE.png" alt="logoSVCE" style="height:60px; margin-right:10px;">
+    <img src="img/logoSVCE.png" alt="logoSVCE" style="height:60px; margin-right:10px;">
    <h1 class="card-title text-center"> <img src="img/logoSVCE.png" alt="logoSVCE" style="height:60px; margin-right:10px;"> Sistema de Vendas com Controle de Estoque</h1>
     <div class="container mt-5" style="max-width: 400px;">
         <div class="card shadow">
@@ -56,8 +56,9 @@ if (isset($_GET['recuperar_senha'])) {
 
 // --- LOGIN COM BANCO ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim($_POST['usuario']);
+    $email = trim($_POST['email']);
     $senha = $_POST['senha'];
+    $erro = '';
 
     $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE email = :email LIMIT 1");
     $stmt->execute([':email' => $email]);
@@ -95,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <form method="POST">
                     <div class="mb-3">
-                        <input type="text" name="usuario" class="form-control" placeholder="E-mail" required>
+                        <input type="email" name="email" class="form-control" placeholder="E-mail" required>
                     </div>
                     <div class="mb-3">
                         <input type="password" name="senha" class="form-control" placeholder="Senha" required>
