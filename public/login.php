@@ -1,63 +1,9 @@
 <?php
 session_start();
-require_once '../svce/config/conexao.php'; // Conexão com PDO
+require_once __DIR__ . "/../config/conexao.php";
 
-if (isset($_GET['recuperar_senha'])) {
-    // FORMULÁRIO DE RECUPERAR SENHA PELO CPF
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cpf'])) {
-        $cpf = trim($_POST['cpf']);
-        $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE cpf = :cpf LIMIT 1");
-        $stmt->execute([':cpf' => $cpf]);
-        $usuario = $stmt->fetch();
-
-        if ($usuario) {
-            echo "<div class='alert alert-success'>Usuário encontrado: {$usuario['nome']}.</div>";
-            // Aqui você pode gerar um formulário para redefinir a senha
-        } else {
-            echo "<div class='alert alert-danger'>CPF não encontrado no sistema.</div>";
-        }
-    }
-    include 'recuperar_senha.php';
-    exit;
-}
-        
-    ?>
-<!DOCTYPE html>
-<html lang="pt-br">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Recuperar Senha - Sistema de Vendas</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-
-<body class="bg-light">
-    <img src="img/logoSVCE.png" alt="logoSVCE" style="height:60px; margin-right:10px;">
-   <h1 class="card-title text-center"> <img src="img/logoSVCE.png" alt="logoSVCE" style="height:60px; margin-right:10px;"> Sistema de Vendas com Controle de Estoque</h1>
-    <div class="container mt-5" style="max-width: 400px;">
-        <div class="card shadow">
-            <div class="card-body">
-                <h4 class="card-title mb-4 text-center">Recuperar Senha</h4>
-                <form method="POST">
-                    <div class="mb-3">
-                        <input type="text" name="cpf" class="form-control" placeholder="Digite seu cpf" required>
-                    </div>
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">Recuperar senha</button>
-                    </div>
-                </form>
-                <p class="mt-3 text-center"><a href="login.php">Voltar ao login</a></p>
-            </div>
-        </div>
-    </div>
-</body>
-
-</html>
-<?php
-    exit;
-
-// --- LOGIN COM BANCO ---
 $erro = '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email']);
     $senha = $_POST['senha'];
@@ -67,34 +13,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $usuario = $stmt->fetch();
 
     if ($usuario && password_verify($senha, $usuario['senha'])) {
-        $_SESSION['usuario_logado'] = $usuario['nome']; // ou $usuario['email']
+        $_SESSION['usuario_logado'] = $usuario['nome']; 
         header('Location: painel.php');
         exit();
     } else {
         $erro = "Usuário ou senha inválidos.";
     }
 }
-    include 'tela_login.php';
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <title>Login - Sistema de Vendas</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-
 <body class="bg-light">
-    <h1 class="card-title text-center" > <img src="img/logoSVCE.png" alt="logoSVCE" style="height:60px; margin-right:10px;"> Sistema de Vendas com Controle de Estoque</h1>
+    <h1 class="card-title text-center">
+        <img src="img/logoSVCE.png" alt="logoSVCE" style="height:60px; margin-right:10px;">
+        Sistema de Vendas com Controle de Estoque
+    </h1>
+
     <div class="container mt-5" style="max-width: 400px;">
         <div class="card shadow">
             <div class="card-body">
                 <h4 class="card-title mb-4 text-center">Login</h4>
 
-                <?php if (isset($erro)): ?>
-                <div class="alert alert-danger"><?= $erro ?></div>
+                <?php if (!empty($erro)): ?>
+                    <div class="alert alert-danger"><?= htmlspecialchars($erro) ?></div>
                 <?php endif; ?>
 
                 <form method="POST">
@@ -108,8 +54,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <button type="submit" class="btn btn-primary">Entrar</button>
                     </div>
                 </form>
+
                 <p class="text-center mb-1">
-                    <a href="login.php?recuperar_senha=1">Esqueci minha senha</a>
+                    <a href="recuperarSenha.php">Esqueci minha senha</a>
                 </p>
                 <p class="text-center">
                     <a href="cadastro.php">Não tem conta? Cadastre-se</a>
@@ -118,5 +65,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 </body>
-
 </html>
