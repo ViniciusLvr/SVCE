@@ -55,7 +55,6 @@ if (isset($_GET['recuperar_senha'])) {
 </html>
 <?php
     exit;
-}
 
 // --- LOGIN COM BANCO ---
 $erro = '';
