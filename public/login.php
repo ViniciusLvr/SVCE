@@ -4,20 +4,23 @@ require_once '../svce/config/conexao.php'; // Conexão com PDO
 
 if (isset($_GET['recuperar_senha'])) {
     // FORMULÁRIO DE RECUPERAR SENHA PELO CPF
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cpf'])) {
         $cpf = trim($_POST['cpf']);
-
         $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE cpf = :cpf LIMIT 1");
         $stmt->execute([':cpf' => $cpf]);
-        $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+        $usuario = $stmt->fetch();
 
         if ($usuario) {
-            echo "<div class='alert alert-success'>Usuário encontrado: {$usuario['nome']}. Defina sua nova senha abaixo.</div>";
+            echo "<div class='alert alert-success'>Usuário encontrado: {$usuario['nome']}.</div>";
             // Aqui você pode gerar um formulário para redefinir a senha
         } else {
             echo "<div class='alert alert-danger'>CPF não encontrado no sistema.</div>";
         }
     }
+    include 'recuperar_senha.php';
+    exit;
+}
+        
     ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -55,14 +58,14 @@ if (isset($_GET['recuperar_senha'])) {
 }
 
 // --- LOGIN COM BANCO ---
+$erro = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email']);
     $senha = $_POST['senha'];
-    $erro = '';
 
     $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE email = :email LIMIT 1");
     $stmt->execute([':email' => $email]);
-    $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+    $usuario = $stmt->fetch();
 
     if ($usuario && password_verify($senha, $usuario['senha'])) {
         $_SESSION['usuario_logado'] = $usuario['nome']; // ou $usuario['email']
@@ -72,6 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $erro = "Usuário ou senha inválidos.";
     }
 }
+    include 'tela_login.php';
 ?>
 
 <!DOCTYPE html>
