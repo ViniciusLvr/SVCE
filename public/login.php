@@ -1,121 +1,116 @@
 <?php
-session_start();
-require_once '../svce/config/conexao.php'; // Conexão com PDO
+require_once '../config/conexao.php';
 
-if (isset($_GET['recuperar_senha'])) {
-    // FORMULÁRIO DE RECUPERAR SENHA PELO CPF
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cpf'])) {
-        $cpf = trim($_POST['cpf']);
-        $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE cpf = :cpf LIMIT 1");
-        $stmt->execute([':cpf' => $cpf]);
-        $usuario = $stmt->fetch();
-
-        if ($usuario) {
-            echo "<div class='alert alert-success'>Usuário encontrado: {$usuario['nome']}.</div>";
-            // Aqui você pode gerar um formulário para redefinir a senha
-        } else {
-            echo "<div class='alert alert-danger'>CPF não encontrado no sistema.</div>";
-        }
-    }
-    include 'recuperar_senha.php';
-    exit;
+function adicionarFornecedor($pdo, $nome, $cpf_cnpj, $telefone) {
+    $sql = "INSERT INTO fornecedor (nome, cpf_cnpj, telefone) VALUES (:nome, :cpf_cnpj, :telefone)";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        ':nome' => $nome,
+        ':cpf_cnpj' => $cpf_cnpj,
+        ':telefone' => $telefone
+    ]);
 }
-        
-    ?>
-<!DOCTYPE html>
-<html lang="pt-br">
 
-<head>
-    <meta charset="UTF-8">
-    <title>Recuperar Senha - Sistema de Vendas</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
+function excluirFornecedor($pdo, $id) {
+    $sql = "DELETE FROM fornecedor WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([':id' => $id]);
+}
 
-<body class="bg-light">
-    <img src="img/logoSVCE.png" alt="logoSVCE" style="height:60px; margin-right:10px;">
-   <h1 class="card-title text-center"> <img src="img/logoSVCE.png" alt="logoSVCE" style="height:60px; margin-right:10px;"> Sistema de Vendas com Controle de Estoque</h1>
-    <div class="container mt-5" style="max-width: 400px;">
-        <div class="card shadow">
-            <div class="card-body">
-                <h4 class="card-title mb-4 text-center">Recuperar Senha</h4>
-                <form method="POST">
-                    <div class="mb-3">
-                        <input type="text" name="cpf" class="form-control" placeholder="Digite seu cpf" required>
-                    </div>
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">Recuperar senha</button>
-                    </div>
-                </form>
-                <p class="mt-3 text-center"><a href="login.php">Voltar ao login</a></p>
-            </div>
-        </div>
-    </div>
-</body>
+// Inserção
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome'])) {
+    $nome      = trim($_POST['nome']);
+    $cpf_cnpj = preg_replace('/\D/', '', $_POST['cpf_cnpj'] ?? '');
+    $telefone  = preg_replace('/\D/', '', $_POST['telefone'] ?? '');
 
-</html>
-<?php
-    exit;
+    // Validação
+    $docValido = (strlen($cpf_cnpj) === 11 || strlen($cpf_cnpj) === 14);
+    $telValido = (strlen($telefone) === 10 || strlen($telefone) === 11);
 
-// --- LOGIN COM BANCO ---
-$erro = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim($_POST['email']);
-    $senha = $_POST['senha'];
-
-    $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE email = :email LIMIT 1");
-    $stmt->execute([':email' => $email]);
-    $usuario = $stmt->fetch();
-
-    if ($usuario && password_verify($senha, $usuario['senha'])) {
-        $_SESSION['usuario_logado'] = $usuario['nome']; // ou $usuario['email']
-        header('Location: painel.php');
+    if (!empty($nome) && $docValido && $telValido) {
+        adicionarFornecedor($pdo, $nome, $cpf_cnpj, $telefone);
+        header("Location: fornecedor.php");
         exit();
     } else {
-        $erro = "Usuário ou senha inválidos.";
+        echo "<div class='alert alert-danger text-center'>⚠️ Preencha corretamente: Nome, CPF (11 dígitos) ou CNPJ (14 dígitos) e Telefone (10 ou 11 dígitos).</div>";
     }
 }
-    include 'tela_login.php';
+
+// Exclusão
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['excluir_id'])) {
+    $excluir_id = $_POST['excluir_id'];
+    excluirFornecedor($pdo, $excluir_id);
+    header("Location: fornecedor.php");
+    exit();
+}
+
+// Listagem
+$stmt = $pdo->query("SELECT * FROM fornecedor ORDER BY created_at DESC");
+$fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
-    <title>Login - Sistema de Vendas</title>
+    <title>Fornecedores</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
-<body class="bg-light">
-    <h1 class="card-title text-center" > <img src="img/logoSVCE.png" alt="logoSVCE" style="height:60px; margin-right:10px;"> Sistema de Vendas com Controle de Estoque</h1>
-    <div class="container mt-5" style="max-width: 400px;">
-        <div class="card shadow">
-            <div class="card-body">
-                <h4 class="card-title mb-4 text-center">Login</h4>
-
-                <?php if (isset($erro)): ?>
-                <div class="alert alert-danger"><?= $erro ?></div>
-                <?php endif; ?>
-
-                <form method="POST">
-                    <div class="mb-3">
-                        <input type="email" name="email" class="form-control" placeholder="E-mail" required>
-                    </div>
-                    <div class="mb-3">
-                        <input type="password" name="senha" class="form-control" placeholder="Senha" required>
-                    </div>
-                    <div class="d-grid mb-3">
-                        <button type="submit" class="btn btn-primary">Entrar</button>
-                    </div>
-                </form>
-                <p class="text-center mb-1">
-                    <a href="login.php?recuperar_senha=1">Esqueci minha senha</a>
-                </p>
-                <p class="text-center">
-                    <a href="cadastro.php">Não tem conta? Cadastre-se</a>
-                </p>
-            </div>
+<body>
+<form method="post" class="border p-4 rounded shadow-sm bg-light mb-5">
+    <div class="row mb-3">
+        <div class="col">
+            <input type="text" name="nome" class="form-control" placeholder="Nome" required>
         </div>
+        <div class="col">
+            <input type="text" name="cpf_cnpj" class="form-control" placeholder="CPF ou CNPJ" 
+                   pattern="\d{11}|\d{14}" 
+                   title="Digite apenas números (11 para CPF ou 14 para CNPJ)" required>
+        </div>
+        <div class="col">
+            <input type="text" name="telefone" class="form-control" placeholder="Telefone" 
+                   pattern="\d{10,11}" title="Digite apenas números (10 ou 11 dígitos)" required>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-success">Cadastrar</button>
+</form>
+
+        <h2 class="mb-3">Fornecedores Cadastrados</h2>
+        <div class="table-responsive">
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>CPF/CNPJ</th>
+            <th>Telefone</th>
+            <th>Cadastro</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach ($fornecedores as $f): ?>
+        <tr>
+            <td><?= htmlspecialchars($f['id']) ?></td>
+            <td><?= htmlspecialchars($f['nome']) ?></td>
+            <td><?= htmlspecialchars($f['cpf_cnpj']) ?></td>
+            <td><?= htmlspecialchars($f['telefone']) ?></td>
+            <td><?= htmlspecialchars($f['created_at']) ?></td>
+            <td>
+                <form method="post" onsubmit="return confirm('Tem certeza que deseja excluir este fornecedor?');">
+                    <input type="hidden" name="excluir_id" value="<?= htmlspecialchars($f['id']) ?>">
+                    <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                </form>
+            </td>
+        </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+    </div>
+
+        <a href="../public/painel.php" class="btn btn-danger mt-4">Voltar ao painel</a>
     </div>
 </body>
 
