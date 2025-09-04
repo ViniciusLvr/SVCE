@@ -35,6 +35,7 @@ function atualizarCliente($pdo, $id, $nome, $cpf_cnpj, $telefone, $endereco) {
 
 // Verifica envio do formulário de cadastro
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_id']) && !isset($_POST['excluir_id'])) {
+    $id = $_POST['editar_id'];
     $nome = $_POST['nome'] ?? '';
     $cpf_cnpj = $_POST['cpf_cnpj'] ?? '';
     $telefone = $_POST['telefone'] ?? '';
@@ -152,22 +153,22 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <div class="mb-3">
             <label class="form-label">Nome</label>
             <input type="text" name="nome" class="form-control" 
-                   value="<?= htmlspecialchars($cliente['nome']) ?>" required>
+                   value="<?= htmlspecialchars($cliente['nome']) ?>" >
           </div>
           <div class="mb-3">
             <label class="form-label">CPF/CNPJ</label>
             <input type="text" name="cpf_cnpj" class="form-control" 
-                   value="<?= htmlspecialchars($cliente['cpf_cnpj']) ?>" required>
+                   value="<?= htmlspecialchars($cliente['cpf_cnpj']) ?>" >
           </div>
           <div class="mb-3">
             <label class="form-label">Telefone</label>
             <input type="text" name="telefone" class="form-control" 
-                   value="<?= htmlspecialchars($cliente['telefone']) ?>" required>
+                   value="<?= htmlspecialchars($cliente['telefone']) ?>" >
           </div>
           <div class="mb-3">
             <label class="form-label">Endereço</label>
             <input type="text" name="endereco" class="form-control" 
-                   value="<?= htmlspecialchars($cliente['endereco']); ?>" required>
+                   value="<?= htmlspecialchars($cliente['endereco']); ?>" >
           </div>
         </div>
         <div class="modal-footer">
