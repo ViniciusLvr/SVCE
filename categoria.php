@@ -1,5 +1,5 @@
 <?php
-require_once '../SVCE/config/conexao.php';
+require_once '../config/conexao.php';
 
 function adicionarCategoria($pdo, $nome) {
     $sql = "INSERT INTO categorias (nome) VALUES (:nome)";

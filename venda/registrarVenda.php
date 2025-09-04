@@ -3,7 +3,7 @@
 //ini_set('display_errors', 1);
 //error_reporting(E_ALL);
 
-require "../SVCE/config/conexao.php";
+require "../config/conexao.php";
 ?>
 
 <!DOCTYPE html>
