@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '/../config/conexao.php';
+require_once '../config/conexao.php';
 
 $erro = '';
 
@@ -49,6 +49,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     <div class="mb-3">
                         <input type="password" name="senha" class="form-control" placeholder="Senha" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="CPF" name="CPF" class="form-control" placeholder="CPF" required>
                     </div>
                     <div class="d-grid mb-3">
                         <button type="submit" class="btn btn-primary">Entrar</button>

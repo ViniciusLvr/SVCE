@@ -184,6 +184,7 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         <a href="../public/painel.php" class="btn btn-danger mt-4">Voltar ao painel</a>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

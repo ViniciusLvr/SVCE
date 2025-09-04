@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '/../config/conexao.php';
+require_once '../config/conexao.php';
 
 $mensagem = '';
 
@@ -13,11 +13,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cpf'])) {
 
     if ($usuario) {
         $mensagem = "<div class='alert alert-success'>Usuário encontrado: " . htmlspecialchars($usuario['nome']) . ".</div>";
+        
+
         // Aqui você pode implementar a lógica de reset de senha
     } else {
         $mensagem = "<div class='alert alert-danger'>CPF não encontrado no sistema.</div>";
     }
 }
+
+
+
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -41,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cpf'])) {
 
                 <form method="POST">
                     <div class="mb-3">
-                        <input type="text" name="cpf" class="form-control" placeholder="Digite seu CPF" required>
+                        <input type="text" name="CPF" class="form-control" placeholder="Digite seu CPF" required>
                     </div>
                     <div class="d-grid">
                         <button type="submit" class="btn btn-primary">Recuperar senha</button>
