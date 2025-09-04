@@ -64,7 +64,12 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="col">
             <input type="text" name="nome" class="form-control" placeholder="Nome" required>
         </div>
-
+        <div class="col">
+            <select id="floatingSelect" class="form-select" aria-label="Floating label select example" name="tipo_doc">
+                <option value="CPF" selected>CPF</option>
+                <option value="CNPJ">CNPJ</option>
+            </select>
+        </div>
         <div class="col">
             <select class="form-select" id="tipoDocumento" name="tipoDocumento">
                 <option value="CPF" selected>CPF</option>
@@ -123,7 +128,7 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <a href="../public/painel.php" class="btn btn-danger mt-4">Voltar ao painel</a>
     </div>
 
-    <script src="../assets/js/fornecedorCPF.js"></script>
+    <script src="../assets/js/fornecedor-mask.js"></script>
 </body>
 
 </html>

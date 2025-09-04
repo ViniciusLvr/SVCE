@@ -1,5 +1,5 @@
 <?php
-require "../SVCE/config/conexao.php";
+require "../config/conexao.php";
 
 if (!isset($_POST['cliente_id'], $_POST['produto_id'], $_POST['quantidade'], $_POST['preco_unitario'])) {
     die("Dados incompletos.");

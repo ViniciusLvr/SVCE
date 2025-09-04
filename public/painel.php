@@ -1,6 +1,6 @@
 <?php
 // Inclui o arquivo de autenticação (ajustando caminho relativo)
-require_once __DIR__ . "/../config/auth.php";
+require_once '../config/auth.php';
 ?>
 
 <!DOCTYPE html>

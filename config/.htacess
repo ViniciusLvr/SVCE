@@ -1,0 +1,4 @@
+<FilesMatch "\.(php|ini|env)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>

@@ -1,5 +1,5 @@
 <?php
-require_once '../SVCE/config/conexao.php';
+require_once 'config/conexao.php';
 
 function adicionarCategoria($pdo, $nome) {
     $sql = "INSERT INTO categorias (nome) VALUES (:nome)";
@@ -76,6 +76,44 @@ $categorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </td>
                         </tr>
                     <?php endforeach; ?>
+
+                <?php foreach ($categorias as $categorias): ?>
+<div class="modal fade" id="editarCliente<?= $categorias['id'] ?>" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post">
+        <div class="modal-header">
+          <h5 class="modal-title">Editar Cliente</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="editar_id" value="<?= $cliente['id'] ?>">
+          <div class="mb-3">
+            <label class="form-label">Nome</label>
+            <input type="text" name="nome" class="form-control" 
+                   value="<?= htmlspecialchars($cliente['nome']) ?>" >
+          </div>
+          <div class="mb-3">
+            <label class="form-label">CPF/CNPJ</label>
+            <input type="text" name="cpf_cnpj" class="form-control" 
+                   value="<?= htmlspecialchars($categorias['cpf_cnpj']) ?>" >
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<?php endforeach; ?>
+
+        </div>
+
+        <a href="../public/painel.php" class="btn btn-danger mt-4">Voltar ao painel</a>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
                 </tbody>
             </table>
         </div>

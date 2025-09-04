@@ -1,5 +1,5 @@
 <?php
-require_once '../SVCE/config/conexao.php';
+require_once '../config/conexao.php';
 
 $erro = '';
 $sucesso = '';
@@ -8,8 +8,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nome = trim($_POST['nome']);
     $email = trim($_POST['email']);
     $senha = $_POST['senha'];
+    $CPF = trim($_POST['CPF']);
 
-    if ($nome && $email && $senha) {
+    if ($nome && $email && $senha && $CPF) {
         // Verifica se o e-mail já está cadastrado
         if (strlen($senha) < 8 || !preg_match('/[\W]/', $senha)) {
         $erro = "A senha deve ter no mínimo 8 caracteres e incluir pelo menos 1 caractere especial.";
@@ -17,8 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Verifica se o e-mail já está cadastrado
             $stmt = $pdo->prepare("SELECT id FROM usuarios WHERE email = :email");
             $stmt->execute([
-                           ':email' => $email,
-                           ':nome' => $nome
+                           ':email' => $email
                            ]);
 
             if ($stmt->rowCount() > 0) {
@@ -28,20 +28,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
 
                 // Inserir no banco
-                $stmt = $pdo->prepare("INSERT INTO usuarios (nome, email, senha) VALUES (:nome, :email, :senha)");
+                $stmt = $pdo->prepare("INSERT INTO usuarios (nome, email, senha, CPF) VALUES (:nome, :email, :senha, :CPF)");
                 $stmt->execute([
                     ':nome' => $nome,
                     ':email' => $email,
-                    ':senha' => $senha_hash
+                    ':senha' => $senha_hash,
+                    ':CPF' => $CPF
                 ]);
 
                 $sucesso = "Cadastro realizado com sucesso! <a href='login.php' class='alert-link'>Clique aqui para entrar</a>";
                 try {
-                    $stmt = $pdo->prepare("INSERT INTO usuarios (nome, email, senha) VALUES (:nome, :email, :senha)");
+                    $stmt = $pdo->prepare("INSERT INTO usuarios (nome, email, senha, CPF) VALUES (:nome, :email, :senha, :CPF)");
                     $stmt->execute([
                         ':nome' => $nome,
                         ':email' => $email,
-                        ':senha' => $senha_hash
+                        ':senha' => $senha_hash,
+                        ':CPF' => $CPF
                     ]);
 
                     $sucesso = "Cadastro realizado com sucesso! <a href='login.php' class='alert-link'>Clique aqui para entrar</a>";
@@ -96,6 +98,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="mb-3">
                 <label for="senha" class="form-label">Senha</label>
                 <input type="password" class="form-control" name="senha" id="senha" required>
+            </div>
+            <div class="mb-3">
+                <label for="CPF" class="form-label">CPF</label>
+                <input type="CPF" class="form-control" name="CPF" id="CPF" required>
+            </div>
+            <div class="mb-3">
+                <label for="psecreta" class="form-label">Qual sua cor preferida?</label>
+                <input type="psecreta" class="form-control" name="psecreta" id="psecreta" required>
             </div>
             <button type="submit" class="btn btn-primary">Cadastrar</button>
         </form>
