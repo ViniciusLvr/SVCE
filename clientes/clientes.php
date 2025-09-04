@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . "/../config/conexao.php";
-require_once __DIR__ . "/../config/auth.php";
+require_once '../config/conexao.php';
+require_once __DIR__ . "../config/auth.php";
 
 function adicionarCliente($pdo, $nome, $cpf_cnpj, $telefone, $endereco) {
     $sql = "INSERT INTO clientes (nome, cpf_cnpj, telefone, endereco) VALUES (:nome, :cpf_cnpj, :telefone, :endereco)";
@@ -33,24 +33,8 @@ function atualizarCliente($pdo, $id, $nome, $cpf_cnpj, $telefone, $endereco) {
     ]);
 }
 
-// Verifica se foi adicionado
-if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['editar_id']) && !isset($_POST['excluir_id'])) {
-    $nome = $_POST['nome'] ?? '';
-    $cpf_cnpj = $_POST['cpf_cnpj'] ?? '';
-    $telefone = $_POST['telefone'] ?? '';
-    $endereco = $_POST['endereco'] ?? '';
-
-    if ($nome && $cpf_cnpj && $telefone && $endereco) {
-        adicionarCliente($pdo, $nome, $cpf_cnpj, $telefone, $endereco);
-        header("Location: clientes.php"); // recarrega a página mostrando a lista atualizada
-        exit();
-    } else {
-        echo "<div class='alert alert-danger'>Todos os campos são obrigatórios.</div>";
-    }
-}
-// Verifica se foi cadastrado
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_id'])) {
-    $id = $_POST['editar_id'];
+// Verifica envio do formulário de cadastro
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_id']) && !isset($_POST['excluir_id'])) {
     $nome = $_POST['nome'] ?? '';
     $cpf_cnpj = $_POST['cpf_cnpj'] ?? '';
     $telefone = $_POST['telefone'] ?? '';
@@ -58,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_id'])) {
 
     if ($id && $nome && $cpf_cnpj && $telefone && $endereco) {
         atualizarCliente($pdo, $id, $nome, $cpf_cnpj, $telefone, $endereco);
-        header("Location: clientes.php"); // recarrega página para ver alterações
+        header("Location: clientes.php");
         exit();
     } else {
         echo "<div class='alert alert-danger'>Todos os campos são obrigatórios para editar.</div>";
@@ -114,45 +98,45 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <h2 class="mb-3">Clientes Cadastrados</h2>
         <div class="table-responsive">
             <table class="table table-bordered table-striped">
-    <thead class="table-dark">
-        <tr>
-            <th>ID</th>
-            <th>Nome</th>
-            <th>CPF/CNPJ</th>
-            <th>Telefone</th>
-            <th>Endereço</th>
-            <th>Cadastro</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php foreach ($clientes as $cliente): ?>
-        <tr>
-            <td><?= htmlspecialchars($cliente['id']) ?></td>
-            <td><?= htmlspecialchars($cliente['nome']) ?></td>
-            <td><?= htmlspecialchars($cliente['cpf_cnpj']) ?></td>
-            <td><?= htmlspecialchars($cliente['telefone']) ?></td>
-            <td><?= htmlspecialchars($cliente['endereco']) ?></td>
-            <td><?= htmlspecialchars($cliente['created_at']) ?></td>
-            <td>
-                <!-- Botão Editar (abre modal) -->
-                <button type="button" class="btn btn-sm btn-primary"
-                        data-bs-toggle="modal"
-                        data-bs-target="#editarCliente<?= $cliente['id'] ?>">
-                    Editar
-                </button>
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>CPF/CNPJ</th>
+                        <th>Telefone</th>
+                        <th>Endereço</th>
+                        <th>Cadastro</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($clientes as $cliente): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($cliente['id']) ?></td>
+                        <td><?= htmlspecialchars($cliente['nome']) ?></td>
+                        <td><?= htmlspecialchars($cliente['cpf_cnpj']) ?></td>
+                        <td><?= htmlspecialchars($cliente['telefone']) ?></td>
+                        <td><?= htmlspecialchars($cliente['endereco']) ?></td>
+                        <td><?= htmlspecialchars($cliente['created_at']) ?></td>
+                        <td>
+                            <!-- Botão Editar (abre modal) -->
+                            <button type="button" class="btn btn-sm btn-primary"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editarCliente<?= $cliente['id'] ?>">
+                                Editar
+                            </button>
 
-                <!-- Botão Excluir -->
-                <form method="post" class="d-inline"
-                      onsubmit="return confirm('Tem certeza que deseja excluir este cliente?');">
-                    <input type="hidden" name="excluir_id" value="<?= htmlspecialchars($cliente['id']) ?>">
-                    <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
-                </form>
-            </td>
-        </tr>
-        <?php endforeach; ?>
-    </tbody>
-</table>
+                            <!-- Botão Excluir -->
+                            <form method="post"
+                                onsubmit="return confirm('Tem certeza que deseja excluir este cliente?');">
+                                <input type="hidden" name="excluir_id" value="<?= htmlspecialchars($cliente['id']) ?>">
+                                <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
 
             <?php foreach ($clientes as $cliente): ?>
 <div class="modal fade" id="editarCliente<?= $cliente['id'] ?>" tabindex="-1" aria-hidden="true">
@@ -195,11 +179,11 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
   </div>
 </div>
 <?php endforeach; ?>
+
         </div>
 
         <a href="../public/painel.php" class="btn btn-danger mt-4">Voltar ao painel</a>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

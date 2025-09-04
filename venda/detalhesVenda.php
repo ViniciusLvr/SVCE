@@ -1,5 +1,5 @@
 <?php
-include "../config/conexao.php";
+include "../SVCE/config/conexao.php";
 
 $id_venda = (int)$_GET['id'];
 

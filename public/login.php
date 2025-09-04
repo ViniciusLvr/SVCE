@@ -29,8 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-    <img src="img/logoSVCE.png" alt="logoSVCE" style="height:60px; margin-right:10px;">
-    <h1 class="card-title text-center">        
+    <h1 class="card-title text-center">
+        <img src="img/logoSVCE.png" alt="logoSVCE" style="height:60px; margin-right:10px;">
         Sistema de Vendas com Controle de Estoque
     </h1>
 

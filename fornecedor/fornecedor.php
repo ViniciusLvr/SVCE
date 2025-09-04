@@ -19,27 +19,21 @@ function excluirFornecedor($pdo, $id) {
 
 // Inserção
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome'])) {
-$nome     = trim($_POST['nome']);
-$cpf      = preg_replace('/\D/', '', $_POST['cpf'] ?? '');
-$cnpj     = preg_replace('/\D/', '', $_POST['cnpj'] ?? '');
-$telefone = preg_replace('/\D/', '', $_POST['telefone'] ?? '');
+    $nome      = trim($_POST['nome']);
+    $cpf_cnpj = preg_replace('/\D/', '', $_POST['cpf_cnpj'] ?? '');
+    $telefone  = preg_replace('/\D/', '', $_POST['telefone'] ?? '');
 
-// Pelo menos CPF ou CNPJ deve ser preenchido
-$docValido = (!empty($cpf) && strlen($cpf) === 11) || (!empty($cnpj) && strlen($cnpj) === 14);
-$telValido = (strlen($telefone) === 10 || strlen($telefone) === 11);
+    // Validação
+    $docValido = (strlen($cpf_cnpj) === 11 || strlen($cpf_cnpj) === 14);
+    $telValido = (strlen($telefone) === 10 || strlen($telefone) === 11);
 
-if (!empty($nome) && $docValido && $telValido) {
-    // Se CPF estiver preenchido, salva CPF; senão, salva CNPJ
-    $documento = !empty($cpf) ? $cpf : $cnpj;
-
-    adicionarFornecedor($pdo, $nome, $documento, $telefone);
-    header("Location: fornecedor.php");
-    exit();
-} else {
-    echo "<div class='alert alert-danger text-center'>
-          ⚠️ Preencha corretamente: Nome, CPF (11 dígitos) ou CNPJ (14 dígitos) e Telefone (10 ou 11 dígitos).
-          </div>";
-}
+    if (!empty($nome) && $docValido && $telValido) {
+        adicionarFornecedor($pdo, $nome, $cpf_cnpj, $telefone);
+        header("Location: fornecedor.php");
+        exit();
+    } else {
+        echo "<div class='alert alert-danger text-center'>⚠️ Preencha corretamente: Nome, CPF (11 dígitos) ou CNPJ (14 dígitos) e Telefone (10 ou 11 dígitos).</div>";
+    }
 }
 
 // Exclusão
@@ -71,12 +65,9 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <input type="text" name="nome" class="form-control" placeholder="Nome" required>
         </div>
         <div class="col">
-            <input type="text" name="cpf" class="form-control" placeholder="CPF" 
-                   pattern="\d{11}" title="Digite apenas números (11 dígitos)">
-        </div>
-        <div class="col">
-            <input type="text" name="cnpj" class="form-control" placeholder="CNPJ" 
-                   pattern="\d{14}" title="Digite apenas números (14 dígitos)">
+            <input type="text" name="cpf_cnpj" class="form-control" placeholder="CPF ou CNPJ" 
+                   pattern="\d{11}|\d{14}" 
+                   title="Digite apenas números (11 para CPF ou 14 para CNPJ)" required>
         </div>
         <div class="col">
             <input type="text" name="telefone" class="form-control" placeholder="Telefone" 

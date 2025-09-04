@@ -1,5 +1,5 @@
 <?php
-require "../config/conexao.php";
+require "../SVCE/config/conexao.php";
 ?>
 
 <!DOCTYPE html>

@@ -1,5 +1,5 @@
 <?php
-require_once '../config/conexao.php';
+require_once '../SVCE/config/conexao.php';
 session_start();
 
 // Funções

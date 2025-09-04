@@ -1,5 +1,5 @@
 <?php
-require_once '../config/conexao.php';
+require_once '../SVCE/config/conexao.php';
 
 $erro = '';
 $sucesso = '';
@@ -18,6 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt = $pdo->prepare("SELECT id FROM usuarios WHERE email = :email");
             $stmt->execute([
                            ':email' => $email,
+                           ':nome' => $nome
                            ]);
 
             if ($stmt->rowCount() > 0) {
@@ -35,21 +36,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 ]);
 
                 $sucesso = "Cadastro realizado com sucesso! <a href='login.php' class='alert-link'>Clique aqui para entrar</a>";
-try {
-    $stmt = $pdo->prepare("INSERT INTO usuarios (nome, email, senha) VALUES (:nome, :email, :senha)");
-    $stmt->execute([
-        ':nome' => $nome,
-        ':email' => $email,
-        ':senha' => $senha_hash
-    ]);
-    $sucesso = "Cadastro realizado com sucesso! <a href='login.php' class='alert-link'>Clique aqui para entrar</a>";
-} catch (PDOException $e) {
-    if ($e->getCode() == 23000) { 
-        $erro = "E-mail já cadastrado.";
-    } else {
-        $erro = "Erro inesperado: " . $e->getMessage();
-    }
-}
+                try {
+                    $stmt = $pdo->prepare("INSERT INTO usuarios (nome, email, senha) VALUES (:nome, :email, :senha)");
+                    $stmt->execute([
+                        ':nome' => $nome,
+                        ':email' => $email,
+                        ':senha' => $senha_hash
+                    ]);
+
+                    $sucesso = "Cadastro realizado com sucesso! <a href='login.php' class='alert-link'>Clique aqui para entrar</a>";
+                } catch (PDOException $e) {
+                    if ($e->getCode() == 23000) { 
+                        $erro = "E-mail já cadastrado.";
+                    } else {
+                        $erro = "Erro inesperado: " . $e->getMessage();
+                    }
+                }
 
             }
         }
