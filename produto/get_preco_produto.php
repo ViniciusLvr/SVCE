@@ -1,5 +1,5 @@
 <?php
-require "config/conexao.php";
+require "../config/conexao.php";
 
 header('Content-Type: application/json');
 

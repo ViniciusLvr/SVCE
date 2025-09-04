@@ -1,0 +1,8 @@
+# Impede listagem de diretórios
+Options -Indexes
+
+# Protege contra acesso direto a arquivos .sql, .env, .ini
+<FilesMatch "\.(sql|env|ini)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
