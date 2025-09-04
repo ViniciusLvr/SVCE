@@ -65,13 +65,28 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <input type="text" name="nome" class="form-control" placeholder="Nome" required>
         </div>
         <div class="col">
-            <input type="text" name="cpf_cnpj" class="form-control" placeholder="CPF ou CNPJ" 
-                   pattern="\d{11}|\d{14}" 
-                   title="Digite apenas números (11 para CPF ou 14 para CNPJ)" required>
+            <select id="floatingSelect" class="form-select" aria-label="Floating label select example" name="tipo_doc">
+                <option value="CPF" selected>CPF</option>
+                <option value="CNPJ">CNPJ</option>
+            </select>
         </div>
         <div class="col">
-            <input type="text" name="telefone" class="form-control" placeholder="Telefone" 
-                   pattern="\d{10,11}" title="Digite apenas números (10 ou 11 dígitos)" required>
+            <select class="form-select" id="tipoDocumento" name="tipoDocumento">
+                <option value="CPF" selected>CPF</option>
+                <option value="CNPJ">CNPJ</option>
+            </select>
+        </div>
+
+        <div class="col" id="campoCPF">
+            <input type="text" name="cpf_cnpj" class="form-control" placeholder="CPF" pattern="\d{11}" title="Digite o CPF (11 dígitos)" required>
+        </div>
+
+        <div class="col" id="campoCNPJ" style="display:none;">
+            <input type="text" name="cpf_cnpj" class="form-control" placeholder="CNPJ" pattern="\d{14}" title="Digite o CNPJ (14 dígitos)">
+        </div>
+
+        <div class="col">
+            <input type="text" name="telefone" class="form-control" placeholder="Telefone" pattern="\d{10,11}" title="Digite apenas números (10 ou 11 dígitos)" required>
         </div>
     </div>
     <button type="submit" class="btn btn-success">Cadastrar</button>
@@ -112,6 +127,8 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         <a href="../public/painel.php" class="btn btn-danger mt-4">Voltar ao painel</a>
     </div>
+
+    <script src="../assets/js/fornecedor-mask.js"></script>
 </body>
 
 </html>
