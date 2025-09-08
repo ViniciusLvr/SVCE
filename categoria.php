@@ -29,6 +29,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['excluir_id'])) {
     exit();
 }
 
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_id'])) {
+    $editar_id = $_POST['editar_id'];
+    $novo_nome = trim($_POST['novo_nome'] ?? '');
+    if ($novo_nome) {
+        $sql = "UPDATE categorias SET nome = :nome WHERE id = :id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':nome' => $novo_nome, ':id' => $editar_id]);
+        header("Location: categoria.php");
+        exit();
+    }
+}
+
 $stmt = $pdo->query("SELECT * FROM categorias ORDER BY created_at DESC");
 $categorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -69,56 +81,50 @@ $categorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <td><?= htmlspecialchars($categoria['nome']) ?></td>
                             <td><?= htmlspecialchars($categoria['created_at']) ?></td>
                             <td>
-                                <form method="post" onsubmit="return confirm('Tem certeza que deseja excluir esta categoria?');">
+                                <form method="post" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir esta categoria?');">
                                     <input type="hidden" name="excluir_id" value="<?= htmlspecialchars($categoria['id']) ?>">
                                     <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
                                 </form>
+                                <!-- Botão para abrir o modal de edição -->
+                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editarCategoria<?= $categoria['id'] ?>">
+                                    Editar
+                                </button>
                             </td>
                         </tr>
                     <?php endforeach; ?>
-
-                <?php foreach ($categorias as $categorias): ?>
-<div class="modal fade" id="editarCliente<?= $categorias['id'] ?>" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <form method="post">
-        <div class="modal-header">
-          <h5 class="modal-title">Editar Cliente</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <input type="hidden" name="editar_id" value="<?= $cliente['id'] ?>">
-          <div class="mb-3">
-            <label class="form-label">Nome</label>
-            <input type="text" name="nome" class="form-control" 
-                   value="<?= htmlspecialchars($cliente['nome']) ?>" >
-          </div>
-          <div class="mb-3">
-            <label class="form-label">CPF/CNPJ</label>
-            <input type="text" name="cpf_cnpj" class="form-control" 
-                   value="<?= htmlspecialchars($categorias['cpf_cnpj']) ?>" >
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-<?php endforeach; ?>
-
-        </div>
-
-        <a href="../public/painel.php" class="btn btn-danger mt-4">Voltar ao painel</a>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
                 </tbody>
             </table>
         </div>
 
-        <a href="../public/painel.php" class="btn btn-danger mt-4">Voltar ao painel</a>
+        <!-- Modais de edição -->
+        <?php foreach ($categorias as $categoria): ?>
+        <div class="modal fade" id="editarCategoria<?= $categoria['id'] ?>" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form method="post">
+                <div class="modal-header">
+                  <h5 class="modal-title">Editar Categoria</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  <input type="hidden" name="editar_id" value="<?= $categoria['id'] ?>">
+                  <div class="mb-3">
+                    <label class="form-label">Nome da Categoria</label>
+                    <input type="text" name="novo_nome" class="form-control" value="<?= htmlspecialchars($categoria['nome']) ?>" required>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <?php endforeach; ?>
+
+        <a href="public/painel.php" class="btn btn-danger mt-4">Voltar ao painel</a>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

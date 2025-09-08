@@ -73,15 +73,15 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
 
         <div class="col" id="campoCPF">
-            <input type="text" name="cpf_cnpj" class="form-control" placeholder="CPF" pattern="\d{11}" title="Digite o CPF (11 dígitos)" required>
+            <input type="text" name="cpf_cnpj" class="form-control cpf" placeholder="CPF" pattern="\d{11}" title="Digite o CPF (11 dígitos)" required>
         </div>
 
         <div class="col" id="campoCNPJ" style="display:none;">
-            <input type="text" name="cpf_cnpj" class="form-control" placeholder="CNPJ" pattern="\d{14}" title="Digite o CNPJ (14 dígitos)">
+            <input type="text" name="cpf_cnpj" class="form-control cnpj" placeholder="CNPJ" pattern="\d{14}" title="Digite o CNPJ (14 dígitos)">
         </div>
 
         <div class="col">
-            <input type="text" name="telefone" class="form-control" placeholder="Telefone" pattern="\d{10,11}" title="Digite apenas números (10 ou 11 dígitos)" required>
+            <input type="text" name="telefone" class="form-control telefone" placeholder="Telefone" pattern="\d{10,11}" title="Digite apenas números (10 ou 11 dígitos)" required>
         </div>
     </div>
     <button type="submit" class="btn btn-success">Cadastrar</button>
@@ -124,6 +124,7 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
     <script src="../assets/js/fornecedor-mask.js"></script>
+    <script src="../assets/js/masks.js"></script>
 </body>
 
 </html>

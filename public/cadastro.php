@@ -100,7 +100,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="password" class="form-control" name="senha" id="senha" required>
             </div>
             <div class="mb-3">
-                <label for="CPF" class="form-label">CPF</label>
+                <label for="CPF" class="form-label cpf">CPF</label>
                 <input type="CPF" class="form-control" name="CPF" id="CPF" required>
             </div>
             <div class="mb-3">
@@ -114,6 +114,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <a href="login.php">Voltar para o login</a>
         </p>
     </div>
+    <script src="../assets/js/masks.js"></script>
 </body>
 
 </html>

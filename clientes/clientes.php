@@ -83,24 +83,33 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <h1 class="mb-4">Cadastro de Clientes</h1>
 
         <form method="post" class="border p-4 rounded shadow-sm bg-light mb-5">
-            <div class="row mb-3">
-                <div class="col">
-                    <input type="text" name="nome" class="form-control" placeholder="Nome" required>
-                </div>
-                <div class="col">
-                    <input type="text" name="cpf_cnpj" class="form-control" placeholder="CPF ou CNPJ" required>
-                </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col">
-                    <input type="text" name="telefone" class="form-control" placeholder="Telefone" required>
-                </div>
-                <div class="col">
-                    <input type="text" name="endereco" class="form-control" placeholder="Endereço" required>
-                </div>
-            </div>
-            <button type="submit" class="btn btn-success">Cadastrar</button>
-        </form>
+    <div class="row mb-3">
+        <div class="col">
+            <input type="text" name="nome" class="form-control" placeholder="Nome" required>
+        </div>
+        <div class="col">
+            <select class="form-select" id="tipoDocumento" name="tipoDocumento">
+                <option value="CPF" selected>CPF</option>
+                <option value="CNPJ">CNPJ</option>
+            </select>
+        </div>
+        <div class="col" id="campoCPF">
+            <input type="text" name="cpf_cnpj" class="form-control cpf" placeholder="CPF" pattern="\d{11}" title="Digite o CPF (11 dígitos)" required>
+        </div>
+        <div class="col" id="campoCNPJ" style="display:none;">
+            <input type="text" name="cpf_cnpj" class="form-control cnpj" placeholder="CNPJ" pattern="\d{14}" title="Digite o CNPJ (14 dígitos)">
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col">
+            <input type="text" name="telefone" class="form-control telefone" placeholder="Telefone" required>
+        </div>
+        <div class="col">
+            <input type="text" name="endereco" class="form-control" placeholder="Endereço" required>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-success">Cadastrar</button>
+</form>
 
         <h2 class="mb-3">Clientes Cadastrados</h2>
         <div class="table-responsive">
@@ -192,6 +201,8 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <a href="../public/painel.php" class="btn btn-danger mt-4">Voltar ao painel</a>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/cliente-mask.js"></script>
+    <script src="../assets/js/masks.js"></script>
 </body>
 
 </html>

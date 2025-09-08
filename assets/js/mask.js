@@ -18,5 +18,5 @@ $(document).ready(function(){
     $('.money').mask('000.000.000,00', {reverse: true});
 });
 
-// adiconar <script src="../js/masks.js"></script>
+// adiconar <script src="../assets/js/masks.js"></script>
 // nos arquivos que usarem as mascaras
