@@ -4,24 +4,20 @@ require_once '../config/conexao.php';
 
 $mensagem = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cpf'])) {
-    $cpf = trim($_POST['cpf']);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['CPF'])) {
+    $cpf = trim($_POST['CPF']);
 
-    $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE cpf = :cpf LIMIT 1");
-    $stmt->execute([':cpf' => $cpf]);
+    $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE CPF = :CPF LIMIT 1");
+    $stmt->execute([':CPF' => $cpf]);
     $usuario = $stmt->fetch();
 
     if ($usuario) {
         $mensagem = "<div class='alert alert-success'>Usuário encontrado: " . htmlspecialchars($usuario['nome']) . ".</div>";
-        
-
         // Aqui você pode implementar a lógica de reset de senha
     } else {
         $mensagem = "<div class='alert alert-danger'>CPF não encontrado no sistema.</div>";
     }
 }
-
-
 
 ?>
 <!DOCTYPE html>
@@ -31,9 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cpf'])) {
     <title>Recuperar Senha - Sistema de Vendas</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="bg-light">
+<body class="bg-light"><img src="../img/logoSVCE.png" alt="logoSVCE" style="height:60px; margin-right:10px;">
     <h1 class="card-title text-center">
-        <img src="img/logoSVCE.png" alt="logoSVCE" style="height:60px; margin-right:10px;">
         Sistema de Vendas com Controle de Estoque
     </h1>
 
@@ -49,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cpf'])) {
                         <input type="text" name="CPF" class="form-control" placeholder="Digite seu CPF" required>
                     </div>
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">Recuperar senha</button>
+                        <button type="submit" class="btn btn-primary"><a href="psecreta.php"></a>Recuperar senha</button>
                     </div>
                 </form>
 
