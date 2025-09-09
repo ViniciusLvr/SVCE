@@ -2,15 +2,33 @@
 require_once '../config/conexao.php';
 session_start();
 
+// =================== CONFIG PAGINAÇÃO ===================
+$registros_por_pagina = 10; // quantidade por página
+$pagina_atual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+if ($pagina_atual < 1) $pagina_atual = 1;
+
+$offset = ($pagina_atual - 1) * $registros_por_pagina;
+
 // =================== FUNÇÕES ===================
-function listarProdutos() {
+function listarProdutos($limit, $offset) {
     global $pdo;
     $sql = "SELECT p.*, c.nome AS categoria, f.nome AS fornecedor
             FROM produtos p
             JOIN categorias c ON p.categoria_id = c.id
             JOIN fornecedor f ON p.fornecedor_id = f.id
-            ORDER BY p.id DESC";
-    return $pdo->query($sql)->fetchAll();
+            ORDER BY p.id DESC
+            LIMIT :limit OFFSET :offset";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll();
+}
+
+function contarProdutos() {
+    global $pdo;
+    $sql = "SELECT COUNT(*) AS total FROM produtos";
+    return $pdo->query($sql)->fetch()['total'];
 }
 
 function buscarProdutoPorNome($nome) {
@@ -126,7 +144,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // =================== CARREGAR DADOS ===================
-$produtos = listarProdutos();
+$total_registros = contarProdutos();
+$total_paginas = ceil($total_registros / $registros_por_pagina);
+
+$produtos = listarProdutos($registros_por_pagina, $offset);
 $categorias = $pdo->query("SELECT * FROM categorias")->fetchAll();
 $fornecedores = $pdo->query("SELECT * FROM fornecedor")->fetchAll();
 ?>
@@ -223,6 +244,28 @@ $fornecedores = $pdo->query("SELECT * FROM fornecedor")->fetchAll();
             <?php endforeach; ?>
         </tbody>
     </table>
+
+    <!-- Paginação -->
+    <nav>
+      <ul class="pagination justify-content-center">
+        <!-- Botão anterior -->
+        <li class="page-item <?= ($pagina_atual <= 1) ? 'disabled' : '' ?>">
+          <a class="page-link" href="?pagina=<?= $pagina_atual - 1 ?>">Anterior</a>
+        </li>
+
+        <!-- Números das páginas -->
+        <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
+          <li class="page-item <?= ($i == $pagina_atual) ? 'active' : '' ?>">
+            <a class="page-link" href="?pagina=<?= $i ?>"><?= $i ?></a>
+          </li>
+        <?php endfor; ?>
+
+        <!-- Botão próximo -->
+        <li class="page-item <?= ($pagina_atual >= $total_paginas) ? 'disabled' : '' ?>">
+          <a class="page-link" href="?pagina=<?= $pagina_atual + 1 ?>">Próximo</a>
+        </li>
+      </ul>
+    </nav>
 
     <!-- Modais de edição -->
     <?php foreach ($produtos as $p): ?>
