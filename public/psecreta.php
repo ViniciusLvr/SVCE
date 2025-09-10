@@ -16,8 +16,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['psecreta'])) {
     $corFavorita = trim($_POST['psecreta']);
 
     // Buscar usuário pelo CPF e verificar se a cor favorita bate
-    $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE CPF = :CPF AND psecreta = :cor LIMIT 1");
-    $stmt->execute([':CPF' => $CPF, ':cor' => $corFavorita]);
+    $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE CPF = :CPF AND TRIM(LOWER(psecreta)) = TRIM(LOWER(:cor)) LIMIT 1");
+    $stmt->execute([':CPF' => $cpf, ':cor' => $corFavorita]);
     $usuario = $stmt->fetch();
 
     if ($usuario) {
