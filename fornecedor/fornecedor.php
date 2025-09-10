@@ -17,6 +17,17 @@ function excluirFornecedor($pdo, $id) {
     $stmt->execute([':id' => $id]);
 }
 
+function atualizarFornecedor($pdo, $id, $nome, $cpf_cnpj, $telefone) {
+    $sql = "UPDATE fornecedor SET nome = :nome, cpf_cnpj = :cpf_cnpj, telefone = :telefone WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        ':id' => $id,
+        ':nome' => $nome,
+        ':cpf_cnpj' => $cpf_cnpj,
+        ':telefone' => $telefone
+    ]);
+}
+
 // Inserção
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome'])) {
     $nome      = trim($_POST['nome']);
@@ -42,6 +53,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['excluir_id'])) {
     excluirFornecedor($pdo, $excluir_id);
     header("Location: fornecedor.php");
     exit();
+}
+
+// Edição
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_id'])) {
+    $id = $_POST['editar_id'];
+    $nome = $_POST['nome'] ?? '';
+    $cpf_cnpj = $_POST['cpf_cnpj'] ?? '';
+    $telefone = $_POST['telefone'] ?? '';
+
+    if ($id && $nome && $cpf_cnpj && $telefone) {
+        atualizarFornecedor($pdo, $id, $nome, $cpf_cnpj, $telefone);
+        header("Location: fornecedor.php");
+        exit();
+    } else {
+        echo "<div class='alert alert-danger'>Todos os campos são obrigatórios para editar.</div>";
+    }
 }
 
 // Listagem
@@ -109,12 +136,52 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <td><?= htmlspecialchars($f['telefone']) ?></td>
             <td><?= htmlspecialchars($f['created_at']) ?></td>
             <td>
-                <form method="post" onsubmit="return confirm('Tem certeza que deseja excluir este fornecedor?');">
+                <!-- Botão Editar (abre modal) -->
+                <button type="button" class="btn btn-sm btn-primary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#editarFornecedor<?= $f['id'] ?>">
+                    Editar
+                </button>
+                <!-- Botão Excluir -->
+                <form method="post" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir este fornecedor?');">
                     <input type="hidden" name="excluir_id" value="<?= htmlspecialchars($f['id']) ?>">
                     <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
                 </form>
             </td>
         </tr>
+
+        <!-- Modal para Edição -->
+<div class="modal fade" id="editarFornecedor<?= $f['id'] ?>" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post">
+        <div class="modal-header">
+          <h5 class="modal-title">Editar Fornecedor</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="editar_id" value="<?= $f['id'] ?>">
+          <div class="mb-3">
+            <label class="form-label">Nome</label>
+            <input type="text" name="nome" class="form-control" value="<?= htmlspecialchars($f['nome']) ?>" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">CPF/CNPJ</label>
+            <input type="text" name="cpf_cnpj" class="form-control" value="<?= htmlspecialchars($f['cpf_cnpj']) ?>" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Telefone</label>
+            <input type="text" name="telefone" class="form-control" value="<?= htmlspecialchars($f['telefone']) ?>" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
         <?php endforeach; ?>
     </tbody>
 </table>
@@ -125,6 +192,7 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <script src="../assets/js/fornecedor-mask.js"></script>
     <script src="../assets/js/masks.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
