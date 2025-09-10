@@ -9,6 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST['email']);
     $senha = $_POST['senha'];
     $CPF = trim($_POST['CPF']);
+    $psecreta = trim($_POST['psecreta']);
 
     if ($nome && $email && $senha && $CPF) {
         // Verifica se o e-mail já está cadastrado
@@ -27,23 +28,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Criptografar a senha
                 $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
 
-                // Inserir no banco
-                $stmt = $pdo->prepare("INSERT INTO usuarios (nome, email, senha, CPF) VALUES (:nome, :email, :senha, :CPF)");
-                $stmt->execute([
-                    ':nome' => $nome,
-                    ':email' => $email,
-                    ':senha' => $senha_hash,
-                    ':CPF' => $CPF
-                ]);
+                // // Inserir no banco
+                // $stmt = $pdo->prepare("INSERT INTO usuarios (nome, email, senha, CPF, psecreta) VALUES (:nome, :email, :senha, :CPF, :psecreta)");
+                // $stmt->execute([
+                //     ':nome' => $nome,
+                //     ':email' => $email,
+                //     ':senha' => $senha_hash,
+                //     ':CPF' => $CPF,
+                //     ':psecreta' => $psecreta
+                // ]);
 
-                $sucesso = "Cadastro realizado com sucesso! <a href='login.php' class='alert-link'>Clique aqui para entrar</a>";
+                // $sucesso = "Cadastro realizado com sucesso! <a href='login.php' class='alert-link'>Clique aqui para entrar</a>";
                 try {
-                    $stmt = $pdo->prepare("INSERT INTO usuarios (nome, email, senha, CPF) VALUES (:nome, :email, :senha, :CPF)");
+                    $stmt = $pdo->prepare("INSERT INTO usuarios (nome, email, senha, CPF, psecreta) VALUES (:nome, :email, :senha, :CPF, :psecreta)");
                     $stmt->execute([
                         ':nome' => $nome,
                         ':email' => $email,
                         ':senha' => $senha_hash,
-                        ':CPF' => $CPF
+                        ':CPF' => $CPF,
+                        ':psecreta' => $psecreta
                     ]);
 
                     $sucesso = "Cadastro realizado com sucesso! <a href='login.php' class='alert-link'>Clique aqui para entrar</a>";
@@ -108,11 +111,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="psecreta" class="form-control" name="psecreta" id="psecreta" required>
             </div>
             <button type="submit" class="btn btn-primary">Cadastrar</button>
-        </form>
 
-        <p class="mt-3">
-            <a href="login.php">Voltar para o login</a>
-        </p>
+            <button type="submit" class="btn btn-primary" ><a href="login.php" style="color: white;">Voltar para o login</a></button>
+            
+
+        </form>
     </div>
     <script src="../assets/js/masks.js"></script>
 </body>
