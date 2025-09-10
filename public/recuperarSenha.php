@@ -4,21 +4,22 @@ require_once '../config/conexao.php';
 
 $mensagem = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['CPF'])) {
-    $cpf = trim($_POST['CPF']);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cpf'])) {
+    $cpf = trim($_POST['cpf']);
 
-    $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE CPF = :CPF LIMIT 1");
-    $stmt->execute([':CPF' => $cpf]);
+    // Valida se o CPF existe no banco
+    $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE CPF = :cpf LIMIT 1");
+    $stmt->execute([':cpf' => $cpf]);
     $usuario = $stmt->fetch();
 
     if ($usuario) {
-        $mensagem = "<div class='alert alert-success'>Usuário encontrado: " . htmlspecialchars($usuario['nome']) . ".</div>";
-        // Aqui você pode implementar a lógica de reset de senha
+        $_SESSION['CPF'] = $cpf;
+        header('Location: psecreta.php');
+        exit;
     } else {
-        $mensagem = "<div class='alert alert-danger'>CPF não encontrado no sistema.</div>";
+        $mensagem = "<div class='alert alert-danger'>CPF não encontrado.</div>";
     }
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -27,7 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['CPF'])) {
     <title>Recuperar Senha - Sistema de Vendas</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="bg-light"><img src="../img/logoSVCE.png" alt="logoSVCE" style="height:60px; margin-right:10px;">
+<body class="bg-light">
+    <img src="../img/logoSVCE.png" alt="logoSVCE" style="height:60px;">
     <h1 class="card-title text-center">
         Sistema de Vendas com Controle de Estoque
     </h1>
@@ -41,10 +43,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['CPF'])) {
 
                 <form method="POST">
                     <div class="mb-3">
-                        <input type="text" name="CPF" class="form-control" placeholder="Digite seu CPF" required>
+                        <input type="text" name="cpf" class="form-control" placeholder="Digite seu CPF" required>
                     </div>
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-primary"><a href="psecreta.php"></a>Recuperar senha</button>
+                        <button type="submit" class="btn btn-primary">Recuperar senha</button>
                     </div>
                 </form>
 

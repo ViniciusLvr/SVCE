@@ -25,7 +25,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($stmt->rowCount() > 0) {
                 $erro = "Já existe um usuário cadastrado com este e-mail ou CPF.";
             } else {
-<<<<<<< HEAD
                 // Criptografar a senha
                 $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
 
@@ -47,20 +46,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         ':email' => $email,
                         ':senha' => $senha_hash,
                         ':CPF' => $CPF,
-=======
-                try {
-                    // Criptografar senha
-                    $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
-
-                    // Inserir no banco
-                    $stmt = $pdo->prepare("INSERT INTO usuarios (nome, email, senha, CPF, psecreta) 
-                                           VALUES (:nome, :email, :senha, :CPF, :psecreta)");
-                    $stmt->execute([
-                        ':nome'     => $nome,
-                        ':email'    => $email,
-                        ':senha'    => $senha_hash,
-                        ':CPF'      => $CPF,
->>>>>>> 9f70844920efcb106132d8b03d70acfa6a163fe2
                         ':psecreta' => $psecreta
                     ]);
 
@@ -79,7 +64,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
-<<<<<<< HEAD
 
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -127,7 +111,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <button type="submit" class="btn btn-primary">Cadastrar</button>
 
-            <button type="submit" class="btn btn-primary" ><a href="login.php" style="color: white;">Voltar para o login</a></button>
+            <button type="submit" class="btn btn-danger mt-4" ><a href="login.php">Voltar para o login</a></button>
             
 
         </form>
@@ -136,5 +120,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </body>
 
 </html>
-=======
->>>>>>> 9f70844920efcb106132d8b03d70acfa6a163fe2
