@@ -75,7 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 
 <body>
-    <img src="../img/CompreFácil.png" alt="logo Compre fácil" style="height:180px; align:center; margin: 0 auto; display: block;">
+    <img src="../img/CompreFácil.png" alt="logo Compre fácil" style="height:200px; align:center; margin: 0 auto; display: block;">
     <div class="container mt-5">
         
         <h1 class="mb-4">Cadastro de Usuário</h1>

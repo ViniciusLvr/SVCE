@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nova_senha'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-    <img src="../img/CompreFácil.png" alt="logo Compre fácil" style="height:180px; align:center; margin: 0 auto; display: block;">
+    <img src="../img/CompreFácil.png" alt="logo Compre fácil" style="height:200px; align:center; margin: 0 auto; display: block;">
     <h1 class="card-title text-center mb-4">Sistema de Vendas com Controle de Estoque</h1>
 
     <div class="container mt-3" style="max-width: 400px;">

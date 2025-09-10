@@ -29,8 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cpf'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-    <img src="../img/CompreFácil.png" alt="logo Compre fácil" style="height:180px; align:center; margin: 0 auto; display: block;">
-    <h1 class="card-title text-center">
+<img src="../img/CompreFácil.png" alt="logo Compre fácil" style="height:200px; align:center; margin: 0 auto; display: block;">    <h1 class="card-title text-center">
         Compre Fácil
     </h1>
 
