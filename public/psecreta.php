@@ -21,15 +21,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['psecreta'])) {
     $usuario = $stmt->fetch();
 
     if ($usuario) {
-        // Aqui você pode liberar o acesso para redefinir a senha
+        // Exibe modal para redefinir senha
+        $showModal = true;
         $mensagem = "<div class='alert alert-success'>Cor favorita confirmada! Usuário: " . htmlspecialchars($usuario['nome']) . ".</div>";
-
-        // Exemplo: redirecionar para página de reset de senha
-        // header('Location: redefinirSenha.php');
-        // exit;
-
     } else {
         $mensagem = "<div class='alert alert-danger'>Cor favorita não confere.</div>";
+    }
+}
+
+// Lógica para atualizar a senha
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nova_senha'])) {
+    $novaSenha = $_POST['nova_senha'];
+    $confirmarSenha = $_POST['confirmar_senha'];
+    if ($novaSenha === $confirmarSenha && strlen($novaSenha) >= 6) {
+        $hash = password_hash($novaSenha, PASSWORD_DEFAULT);
+        $stmt = $pdo->prepare("UPDATE usuarios SET senha = :senha WHERE CPF = :CPF");
+        $stmt->execute([':senha' => $hash, ':CPF' => $cpf]);
+        $mensagem = "<div class='alert alert-success'>Senha redefinida com sucesso! <a href='login.php'>Clique aqui para entrar</a></div>";
+        $showModal = false;
+    } else {
+        $mensagem = "<div class='alert alert-danger'>As senhas não conferem ou são muito curtas (mínimo 6 caracteres).</div>";
+        $showModal = true;
     }
 }
 ?>
@@ -49,19 +61,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['psecreta'])) {
             <div class="card-body">
                 <h4 class="card-title mb-4 text-center">Verificação de Segurança</h4>
 
-                <?= $mensagem ?>
+                                <?= $mensagem ?>
 
-                <form method="POST">
-                    <div class="mb-3">
-                        <label for="psecreta" class="form-label">Qual sua cor favorita?</label>
-                        <input type="text" name="psecreta" id="psecreta" class="form-control" placeholder="Digite sua cor" required>
-                    </div>
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">Verificar</button>
-                    </div>
-                </form>
+                                <form method="POST">
+                                        <div class="mb-3">
+                                                <label for="psecreta" class="form-label">Qual sua cor favorita?</label>
+                                                <input type="text" name="psecreta" id="psecreta" class="form-control" placeholder="Digite sua cor" required>
+                                        </div>
+                                        <div class="d-grid">
+                                                <button type="submit" class="btn btn-primary">Verificar</button>
+                                        </div>
+                                </form>
 
-                <p class="mt-3 text-center"><a href="login.php">Voltar ao login</a></p>
+                                <!-- Modal de redefinição de senha -->
+                                <?php if (!empty($showModal)): ?>
+                                <div class="modal fade show" id="modalRedefinirSenha" tabindex="-1" style="display:block; background:rgba(0,0,0,0.5);" aria-modal="true" role="dialog">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <form method="POST">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Redefinir Senha</h5>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <label for="nova_senha" class="form-label">Nova Senha</label>
+                                                        <input type="password" name="nova_senha" id="nova_senha" class="form-control" minlength="6" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="confirmar_senha" class="form-label">Confirmar Nova Senha</label>
+                                                        <input type="password" name="confirmar_senha" id="confirmar_senha" class="form-control" minlength="6" required>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="submit" class="btn btn-success">Salvar Nova Senha</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <script>
+                                // Foca no campo de senha ao abrir o modal
+                                document.getElementById('nova_senha').focus();
+                                </script>
+                                <?php endif; ?>
+
+                                <p class="mt-3 text-center"><a href="login.php">Voltar ao login</a></p>
             </div>
         </div>
     </div>
