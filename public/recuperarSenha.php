@@ -4,21 +4,22 @@ require_once '../config/conexao.php';
 
 $mensagem = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['CPF'])) {
-    $cpf = trim($_POST['CPF']);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cpf'])) {
+    $cpf = trim($_POST['cpf']);
 
-    $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE CPF = :CPF LIMIT 1");
-    $stmt->execute([':CPF' => $cpf]);
+    // Valida se o CPF existe no banco
+    $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE CPF = :cpf LIMIT 1");
+    $stmt->execute([':cpf' => $cpf]);
     $usuario = $stmt->fetch();
 
     if ($usuario) {
-        $mensagem = "<div class='alert alert-success'>Usuário encontrado: " . htmlspecialchars($usuario['nome']) . ".</div>";
-        // Aqui você pode implementar a lógica de reset de senha
+        $_SESSION['CPF'] = $cpf;
+        header('Location: psecreta.php');
+        exit;
     } else {
-        $mensagem = "<div class='alert alert-danger'>CPF não encontrado no sistema.</div>";
+        $mensagem = "<div class='alert alert-danger'>CPF não encontrado.</div>";
     }
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -42,10 +43,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['CPF'])) {
 
                 <form method="POST">
                     <div class="mb-3">
-                        <input type="text" name="CPF" class="form-control" placeholder="Digite seu CPF" required>
+                        <input type="text" name="cpf" class="form-control" placeholder="Digite seu CPF" required>
                     </div>
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-primary"><a href="psecreta.php"></a>Recuperar senha</button>
+                        <button type="submit" class="btn btn-primary">Recuperar senha</button>
                     </div>
                 </form>
                 <p class="mt-3 text-center"><a href="login.php">Voltar ao login</a></p>

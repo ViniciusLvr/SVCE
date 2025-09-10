@@ -112,8 +112,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="psecreta" class="form-control" name="psecreta" id="psecreta" required>
             </div>
             <button type="submit" class="btn btn-primary">Cadastrar</button>
+
+            <button type="submit" class="btn btn-danger mt-4" ><a href="login.php">Voltar para o login</a></button>
             
-            <button type="submit" class="btn btn-primary" ><a href="login.php" style="color: white;">Voltar para o login</a></button>
+
         </form>
     </div>
     <script src="../assets/js/masks.js"></script>
