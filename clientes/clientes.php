@@ -2,15 +2,26 @@
 require_once '../config/conexao.php';
 require_once  '../config/auth.php';
 
-function adicionarCliente($pdo, $nome, $cpf_cnpj, $telefone, $endereco) {
-    $sql = "INSERT INTO clientes (nome, cpf_cnpj, telefone, endereco) VALUES (:nome, :cpf_cnpj, :telefone, :endereco)";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        ':nome' => $nome,
-        ':cpf_cnpj' => $cpf_cnpj,
-        ':telefone' => $telefone,
-        ':endereco' => $endereco
-    ]);
+function adicionarCliente($pdo, $nome, $telefone, $endereco, $cpf, $cnpj, $tipoDocumento) {
+    if ($tipoDocumento == 'CPF') {
+        $sql = "INSERT INTO clientes (nome, telefone, endereco, cpf) VALUES (:nome, :telefone, :endereco, :cpf)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':nome' => $nome,
+            ':telefone' => $telefone,
+            ':endereco' => $endereco,
+            ':cpf' => $cpf,
+        ]);
+    } elseif ($tipoDocumento == 'CNPJ') {
+        $sql = "INSERT INTO clientes (nome, telefone, endereco, cnpj) VALUES (:nome, :telefone, :endereco, :cnpj)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':nome' => $nome,
+            ':telefone' => $telefone,
+            ':endereco' => $endereco,
+            ':cnpj' => $cnpj,
+        ]);
+    }
 }
 
 function excluirCliente($pdo, $id) {
@@ -19,36 +30,54 @@ function excluirCliente($pdo, $id) {
     $stmt->execute([':id' => $id]);
 }
 
-function atualizarCliente($pdo, $id, $nome, $cpf_cnpj, $telefone, $endereco) {
-    $sql = "UPDATE clientes 
-            SET nome = :nome, cpf_cnpj = :cpf_cnpj, telefone = :telefone, endereco = :endereco 
-            WHERE id = :id";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        ':id' => $id,
-        ':nome' => $nome,
-        ':cpf_cnpj' => $cpf_cnpj,
-        ':telefone' => $telefone,
-        ':endereco' => $endereco
-    ]);
+function atualizarCliente($pdo, $id, $nome, $telefone, $endereco, $cpf, $cnpj, $tipoDocumento) {
+    if ($tipoDocumento == 'CPF') {
+        $sql = "UPDATE clientes 
+                SET nome = :nome, telefone = :telefone, endereco = :endereco, cpf = :cpf
+                WHERE id = :id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':id' => $id,
+            ':nome' => $nome,
+            ':telefone' => $telefone,
+            ':endereco' => $endereco,
+            ':cpf' => $cpf,
+        ]);
+    } elseif ($tipoDocumento == 'CNPJ') {
+        $sql = "UPDATE clientes 
+                SET nome = :nome, telefone = :telefone, endereco = :endereco, cnpj = :cnpj
+                WHERE id = :id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':id' => $id,
+            ':nome' => $nome,
+            ':telefone' => $telefone,
+            ':endereco' => $endereco,
+            ':cnpj' => $cnpj,
+        ]);
+    }
 }
+
 
 // Verifica envio do formulário de cadastro
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_id']) && !isset($_POST['excluir_id'])) {
     $id = $_POST['editar_id'];
     $nome = $_POST['nome'] ?? '';
-    $cpf_cnpj = $_POST['cpf_cnpj'] ?? '';
     $telefone = $_POST['telefone'] ?? '';
     $endereco = $_POST['endereco'] ?? '';
+    $cpf = $_POST['cpf_cnpj'] ?? '';
+    $cnpj = $_POST['cpf_cnpj'] ?? '';
+    $tipoDocumento = $_POST['tipoDocumento'] ?? '';
 
-    if ($id && $nome && $cpf_cnpj && $telefone && $endereco) {
-        atualizarCliente($pdo, $id, $nome, $cpf_cnpj, $telefone, $endereco);
+    if ($id && $nome && $telefone && $endereco && $cpf_cnpj && $tipoDocumento) {
+        atualizarCliente($pdo, $id, $nome, $telefone, $endereco, $cpf, $cnpj, $tipoDocumento);
         header("Location: clientes.php");
         exit();
     } else {
         echo "<div class='alert alert-danger'>Todos os campos são obrigatórios para editar.</div>";
     }
 }
+
 
 // Verifica envio do formulário de exclusão
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['excluir_id'])) {
@@ -130,10 +159,20 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <tr>
                         <td><?= htmlspecialchars($cliente['id']) ?></td>
                         <td><?= htmlspecialchars($cliente['nome']) ?></td>
-                        <td><?= htmlspecialchars($cliente['cpf_cnpj']) ?></td>
                         <td><?= htmlspecialchars($cliente['telefone']) ?></td>
                         <td><?= htmlspecialchars($cliente['endereco']) ?></td>
+                        <td>
+                            <?php 
+                                if (!empty($cliente['cpf'])) {
+                                    echo "CPF: " . htmlspecialchars($cliente['cpf']);
+                                } elseif (!empty($cliente['cnpj'])) {
+                                    echo "CNPJ: " . htmlspecialchars($cliente['cnpj']);
+                                } else {
+                                    echo "N/A";
+                                }
+                            ?>
                         <td><?= htmlspecialchars($cliente['created_at']) ?></td>
+                        
                         <td>
                             <!-- Botão Editar (abre modal) -->
                             <button type="button" class="btn btn-sm btn-primary"

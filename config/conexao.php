@@ -1,6 +1,6 @@
 <?php
 $host = 'localhost';
-$db   = 'svce';
+$db   = 'cf';
 $user = 'root'; // ou outro nome de usuário
 $pass = '';     // sua senha do MySQL
 $charset = 'utf8mb4';
