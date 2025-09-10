@@ -14,11 +14,19 @@ function excluirCategoria($pdo, $id) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['nome'])) {
-    $nome = $_POST['nome'] ?? '';
+    $nome = trim($_POST['nome'] ?? '');
     if ($nome) {
-        adicionarCategoria($pdo, $nome);
-        header("Location: categoria.php");
-        exit();
+        // Verifica se já existe categoria com esse nome (ignorando maiúsculas/minúsculas e espaços)
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM categorias WHERE LOWER(TRIM(nome)) = LOWER(TRIM(:nome))");
+        $stmt->execute([':nome' => $nome]);
+        $existe = $stmt->fetchColumn();
+        if ($existe) {
+            echo "<div class='alert alert-danger'>Já existe uma categoria com esse nome.</div>";
+        } else {
+            adicionarCategoria($pdo, $nome);
+            header("Location: categoria.php");
+            exit();
+        }
     }
 }
 
@@ -33,11 +41,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_id'])) {
     $editar_id = $_POST['editar_id'];
     $novo_nome = trim($_POST['novo_nome'] ?? '');
     if ($novo_nome) {
-        $sql = "UPDATE categorias SET nome = :nome WHERE id = :id";
-        $stmt = $pdo->prepare($sql);
+        // Verifica se já existe categoria com esse nome (ignorando maiúsculas/minúsculas e espaços), exceto a própria
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM categorias WHERE LOWER(TRIM(nome)) = LOWER(TRIM(:nome)) AND id != :id");
         $stmt->execute([':nome' => $novo_nome, ':id' => $editar_id]);
-        header("Location: categoria.php");
-        exit();
+        $existe = $stmt->fetchColumn();
+        if ($existe) {
+            echo "<div class='alert alert-danger'>Já existe uma categoria com esse nome.</div>";
+        } else {
+            $sql = "UPDATE categorias SET nome = :nome WHERE id = :id";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':nome' => $novo_nome, ':id' => $editar_id]);
+            header("Location: categoria.php");
+            exit();
+        }
     }
 }
 
