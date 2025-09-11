@@ -75,7 +75,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 
 <body>
-    <img src="../img/CompreFácil.png" alt="logo Compre fácil" style="height:200px; align:center; margin: 0 auto; display: block;">
+    <nav class="navbar" style="background: rgba(33, 37, 41, 0.85);">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="#">
+      <img src="../img/CompreFácil.png" alt="Logo do Sistema Compre Fácil" width="48" height="40" class="me-2" style="object-fit:contain;">
+      <span class="fw-bold text-white">Compre Fácil</span>
+    </a>
+  </div>
+</nav>
     <div class="container mt-5">
         
         <h1 class="mb-4">Cadastro de Usuário</h1>

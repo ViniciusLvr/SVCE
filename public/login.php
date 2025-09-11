@@ -25,12 +25,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Login - CompreFácil</title>
+    <title>Login - Compre Fácil</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../assets/style/animated-gradient.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="bg-light">
-    <img src="../img/CompreFácil.png" alt="logo Compre fácil" style="height:200px; align:center; margin: 0 auto; display: block;">
+<body class="">
 
+<nav class="navbar" style="background: rgba(33, 37, 41, 0.85);">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="#">
+      <img src="../img/CompreFácil.png" alt="Logo do Sistema Compre Fácil" width="48" height="40" class="me-2" style="object-fit:contain;">
+      <span class="fw-bold text-white">Compre Fácil</span>
+    </a>
+  </div>
+</nav>
+    
     <div class="container mt-5" style="max-width: 400px;">
         <div class="card shadow">
             <div class="card-body">
