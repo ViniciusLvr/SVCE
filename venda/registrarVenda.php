@@ -12,71 +12,87 @@ require "../config/conexao.php";
 <head>
     <meta charset="utf-8" />
     <title>Registrar Venda</title>
+    <link rel="icon" href="../img/CompreFacil.png" type="image/png">
+    <link rel="stylesheet" href="../assets/style/animated-gradient.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
-<body class="container mt-5">
-    <h1 class="mb-4">Registrar Venda</h1>
-
-    <form action="registrar_itens.php" method="POST">
-        <!-- Select de clientes -->
-        <div class="mb-3">
-            <label for="cliente" class="form-label">Selecionar Cliente</label>
-            <select id="cliente" name="cliente_id" class="form-select" required>
-                <option value="">Selecione um cliente</option>
-                <?php
-                try {
-                    $stmt = $pdo->query("SELECT id, nome FROM clientes ORDER BY nome");
-                    while ($cliente = $stmt->fetch()) {
-                        echo "<option value='{$cliente['id']}'>" . htmlspecialchars($cliente['nome']) . "</option>";
-                    }
-                } catch (PDOException $e) {
-                    echo "<option disabled>Erro ao carregar clientes</option>";
-                }
-                ?>
-            </select>
+<body>
+    <nav class="navbar" style="background: rgba(33, 37, 41, 0.85); mb-4;">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="../public/painel.php">
+                <img src="../img/CompreFacil.png" alt="Logo do Sistema Compre Fácil" width="48" height="40" class="me-2"
+                    style="object-fit:contain;">
+                <span class="fw-bold text-white">Compre Fácil</span>
+            </a>
+            <a href="../public/painel.php" class="btn btn-danger mt-4">Voltar ao painel</a>
         </div>
+    </nav>
 
-        <!-- Container de itens da venda -->
-        <div id="itens-container">
-            <div class="row mb-3 item-venda align-items-end">
-                <div class="col-md-5">
-                    <label class="form-label">Produto</label>
-                    <select name="produto_id[]" class="form-select" required>
-                        <?php
-                        try {
-                            $stmt = $pdo->query("SELECT id, nome FROM produtos ORDER BY nome");
-                            while ($produto = $stmt->fetch()) {
-                                echo "<option value='{$produto['id']}'>" . htmlspecialchars($produto['nome']) . "</option>";
-                            }
-                        } catch (PDOException $e) {
-                            echo "<option disabled>Erro ao carregar produtos</option>";
+    <div class="container bg-light p-4 rounded shadow-sm mb-5 mt-5">
+        <h1 class="mb-4">Registrar Venda</h1>
+
+        <form action="registrar_itens.php" method="POST">
+            <!-- Select de clientes -->
+            <div class="mb-3">
+                <label for="cliente" class="form-label">Selecionar Cliente</label>
+                <select id="cliente" name="cliente_id" class="form-select" required>
+                    <option value="">Selecione um cliente</option>
+                    <?php
+                    try {
+                        $stmt = $pdo->query("SELECT id, nome FROM clientes ORDER BY nome");
+                        while ($cliente = $stmt->fetch()) {
+                            echo "<option value='{$cliente['id']}'>" . htmlspecialchars($cliente['nome']) . "</option>";
                         }
-                        ?>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Quantidade</label>
-                    <input type="number" name="quantidade[]" class="form-control quantidade" required value="1" onchange="calcularTotal()" />
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Preço Unitário (R$)</label>
-		    <input type="number" name="preco_unitario[]" step="0.01" class="form-control preco" value="0" required readonly />
+                    } catch (PDOException $e) {
+                        echo "<option disabled>Erro ao carregar clientes</option>";
+                    }
+                    ?>
+                </select>
+            </div>
 
-                </div>
-                <div class="col-md-1">
-                    <button type="button" class="btn btn-danger btn-sm mt-2" onclick="removerItem(this)">Remover</button>
+            <!-- Container de itens da venda -->
+            <div id="itens-container">
+                <div class="row mb-3 item-venda align-items-end">
+                    <div class="col-md-5">
+                        <label class="form-label">Produto</label>
+                        <select name="produto_id[]" class="form-select" required>
+                            <?php
+                            try {
+                                $stmt = $pdo->query("SELECT id, nome FROM produtos ORDER BY nome");
+                                while ($produto = $stmt->fetch()) {
+                                    echo "<option value='{$produto['id']}'>" . htmlspecialchars($produto['nome']) . "</option>";
+                                }
+                            } catch (PDOException $e) {
+                                echo "<option disabled>Erro ao carregar produtos</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Quantidade</label>
+                        <input type="number" name="quantidade[]" class="form-control quantidade" required value="1"
+                            onchange="calcularTotal()" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Preço Unitário (R$)</label>
+                        <input type="number" name="preco_unitario[]" step="0.01" class="form-control preco" value="0"
+                            required readonly />
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-danger btn-sm mt-2" onclick="removerItem(this)">Remover</button>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <button type="button" class="btn btn-secondary mb-3" onclick="adicionarItem()">Adicionar Item</button>
+            <button type="button" class="btn btn-secondary mb-3" onclick="adicionarItem()">Adicionar Item</button>
 
-        <h4 id="total-venda">Total: R$ 0,00</h4>
+            <h4 id="total-venda">Total: R$ 0,00</h4>
 
-        <button type="submit" class="btn btn-primary">Registrar Venda</button>
-        <a href="listar_vendas.php" class="btn btn-outline-secondary ms-2">Ver Vendas</a>
-    </form>
+            <button type="submit" class="btn btn-primary">Registrar Venda</button>
+            <a href="listar_vendas.php" class="btn btn-outline-secondary ms-2">Ver Vendas</a>
+        </form>
+    </div>
 
     <script>
         function adicionarItem() {
@@ -118,37 +134,33 @@ require "../config/conexao.php";
     </script>
 
     <script>
-    	// Atualiza preço ao mudar produto
-    	document.addEventListener('change', function (e) {
-        	if (e.target.matches('select[name="produto_id[]"]')) {
-            	const select = e.target;
-            	const itemDiv = select.closest('.item-venda');
-            	const precoInput = itemDiv.querySelector('input[name="preco_unitario[]"]');
-            	const produtoId = select.value;
+        // Atualiza preço ao mudar produto
+        document.addEventListener('change', function(e) {
+            if (e.target.matches('select[name="produto_id[]"]')) {
+                const select = e.target;
+                const itemDiv = select.closest('.item-venda');
+                const precoInput = itemDiv.querySelector('input[name="preco_unitario[]"]');
+                const produtoId = select.value;
 
-            	if (produtoId) {
-                	fetch(`get_preco_produto.php?id=${produtoId}`)
-                    	.then(res => res.json())
-                    	.then(data => {
-                        	if (data.preco !== undefined) {
-                            	precoInput.value = parseFloat(data.preco).toFixed(2);
-                            	calcularTotal();
-                        	} else {
-                            	precoInput.value = "0.00";
-                        	}
-                    	})
-                    	.catch(err => {
-                        	precoInput.value = "0.00";
-                        	console.error("Erro ao buscar preço:", err);
-                    	});
-            	}
-        	}
-    	});
+                if (produtoId) {
+                    fetch(`get_preco_produto.php?id=${produtoId}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.preco !== undefined) {
+                                precoInput.value = parseFloat(data.preco).toFixed(2);
+                                calcularTotal();
+                            } else {
+                                precoInput.value = "0.00";
+                            }
+                        })
+                        .catch(err => {
+                            precoInput.value = "0.00";
+                            console.error("Erro ao buscar preço:", err);
+                        });
+                }
+            }
+        });
     </script>
-
-<a href="../public/painel.php" class="btn btn-danger mt-4">Voltar ao painel</a>
-
-
 </body>
 
 </html>

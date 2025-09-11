@@ -51,7 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                     $sucesso = "Cadastro realizado com sucesso! <a href='login.php' class='alert-link'>Clique aqui para entrar</a>";
                 } catch (PDOException $e) {
-                    if ($e->getCode() == 23000) { 
+                    if ($e->getCode() == 23000) {
                         $erro = "Usuário já cadastrado (e-mail ou CPF).";
                     } else {
                         $erro = "Erro inesperado: " . $e->getMessage();
@@ -71,60 +71,66 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <title>Cadastro de Usuário</title>
+    <link rel="icon" href="../img/CompreFacil.png" type="image/png">
+    <link rel="stylesheet" href="../assets/style/animated-gradient.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
     <nav class="navbar" style="background: rgba(33, 37, 41, 0.85);">
-  <div class="container">
-    <a class="navbar-brand d-flex align-items-center" href="#">
-      <img src="../img/CompreFacil.png" alt="Logo do Sistema Compre Fácil" width="48" height="40" class="me-2" style="object-fit:contain;">
-      <span class="fw-bold text-white">Compre Fácil</span>
-    </a>
-  </div>
-</nav>
-    <div class="container mt-5">
-        
-        <h1 class="mb-4">Cadastro de Usuário</h1>
-
-        <?php if ($erro): ?>
-        <div class="alert alert-danger" role="alert">
-            <?= $erro ?>
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="login.php">
+                <img src="../img/CompreFacil.png" alt="Logo do Sistema Compre Fácil" width="48" height="40" class="me-2" style="object-fit:contain;">
+                <span class="fw-bold text-white">Compre Fácil</span>
+            </a>
         </div>
-        <?php elseif ($sucesso): ?>
-        <div class="alert alert-success" role="alert">
-            <?= $sucesso ?>
+    </nav>
+    <div class="container">
+        <div class="container mt-5">
+
+
+
+            <?php if ($erro): ?>
+                <div class="alert alert-danger" role="alert">
+                    <?= $erro ?>
+                </div>
+            <?php elseif ($sucesso): ?>
+                <div class="alert alert-success" role="alert">
+                    <?= $sucesso ?>
+                </div>
+            <?php endif; ?>
+
+            <form method="post" class="border p-4 rounded shadow-sm bg-light">
+                <h1 class="mb-4">Cadastro de Usuário</h1>
+                <div class="mb-3">
+                    <label for="nome" class="form-label">Nome completo</label>
+                    <input type="text" class="form-control" name="nome" id="nome" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">E-mail</label>
+                    <input type="email" class="form-control" name="email" id="email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Senha</label>
+                    <input type="password" class="form-control" name="senha" id="senha" required>
+                </div>
+                <div class="mb-3">
+                    <label for="CPF" class="form-label cpf">CPF</label>
+                    <input type="CPF" class="form-control CPF" name="CPF" id="CPF" required>
+                </div>
+                <div class="mb-3">
+                    <label for="psecreta" class="form-label">Qual sua cor preferida?</label>
+                    <input type="psecreta" class="form-control" name="psecreta" id="psecreta" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Cadastrar</button>
+
+                <a href="login.php" class="btn btn-danger">Voltar para o Login</a>
+
+
+            </form>
         </div>
-        <?php endif; ?>
-
-        <form method="post" class="border p-4 rounded shadow-sm bg-light">
-            <div class="mb-3">
-                <label for="nome" class="form-label">Nome completo</label>
-                <input type="text" class="form-control" name="nome" id="nome" required>
-            </div>
-            <div class="mb-3">
-                <label for="email" class="form-label">E-mail</label>
-                <input type="email" class="form-control" name="email" id="email" required>
-            </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Senha<label>
-                <input type="password" class="form-control" name="senha" id="senha" required>
-            </div>
-            <div class="mb-3">
-                <label for="CPF" class="form-label cpf">CPF</label>
-                <input type="CPF" class="form-control CPF" name="CPF" id="CPF" required>
-            </div>
-            <div class="mb-3">
-                <label for="psecreta" class="form-label">Qual sua cor preferida?</label>
-                <input type="psecreta" class="form-control" name="psecreta" id="psecreta" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Cadastrar</button>
-
-            <button type="submit" class="btn btn-danger mt-4" ><a href="login.php">Voltar para o login</a></button>
-            
-
-        </form>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../assets/js/masks.js"></script>
 </body>
 

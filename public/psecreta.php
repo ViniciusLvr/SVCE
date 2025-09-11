@@ -47,73 +47,78 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nova_senha'])) {
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <title>Recuperar Conta - Sistema de Vendas</title>
+    <link rel="icon" href="../img/CompreFacil.png" type="image/png">
+    <link rel="stylesheet" href="../assets/style/animated-gradient.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body class="bg-light">
-<nav class="navbar" style="background: rgba(33, 37, 41, 0.85);">
-  <div class="container">
-    <a class="navbar-brand d-flex align-items-center" href="#">
-      <img src="../img/CompreFacil.png" alt="Logo do Sistema Compre Fácil" width="48" height="40" class="me-2" style="object-fit:contain;">
-      <span class="fw-bold text-white">Compre Fácil</span>
-    </a>
-  </div>
-</nav>
+    <nav class="navbar" style="background: rgba(33, 37, 41, 0.85);">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="login.php">
+                <img src="../img/CompreFacil.png" alt="Logo do Sistema Compre Fácil" width="48" height="40" class="me-2" style="object-fit:contain;">
+                <span class="fw-bold text-white">Compre Fácil</span>
+            </a>
+        </div>
+    </nav>
 
     <div class="container mt-3" style="max-width: 400px;">
         <div class="card shadow">
             <div class="card-body">
                 <h4 class="card-title mb-4 text-center">Verificação de Segurança</h4>
 
-                                <?= $mensagem ?>
+                <?= $mensagem ?>
 
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="psecreta" class="form-label">Qual sua cor favorita?</label>
+                        <input type="text" name="psecreta" id="psecreta" class="form-control" placeholder="Digite sua cor" required>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Verificar</button>
+                    </div>
+                </form>
+
+                <!-- Modal de redefinição de senha -->
+                <?php if (!empty($showModal)): ?>
+                    <div class="modal fade show" id="modalRedefinirSenha" tabindex="-1" style="display:block; background:rgba(0,0,0,0.5);" aria-modal="true" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
                                 <form method="POST">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Redefinir Senha</h5>
+                                    </div>
+                                    <div class="modal-body">
                                         <div class="mb-3">
-                                                <label for="psecreta" class="form-label">Qual sua cor favorita?</label>
-                                                <input type="text" name="psecreta" id="psecreta" class="form-control" placeholder="Digite sua cor" required>
+                                            <label for="nova_senha" class="form-label">Nova Senha</label>
+                                            <input type="password" name="nova_senha" id="nova_senha" class="form-control" minlength="6" required>
                                         </div>
-                                        <div class="d-grid">
-                                                <button type="submit" class="btn btn-primary">Verificar</button>
-                                        </div>
-                                </form>
-
-                                <!-- Modal de redefinição de senha -->
-                                <?php if (!empty($showModal)): ?>
-                                <div class="modal fade show" id="modalRedefinirSenha" tabindex="-1" style="display:block; background:rgba(0,0,0,0.5);" aria-modal="true" role="dialog">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <form method="POST">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Redefinir Senha</h5>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="mb-3">
-                                                        <label for="nova_senha" class="form-label">Nova Senha</label>
-                                                        <input type="password" name="nova_senha" id="nova_senha" class="form-control" minlength="6" required>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label for="confirmar_senha" class="form-label">Confirmar Nova Senha</label>
-                                                        <input type="password" name="confirmar_senha" id="confirmar_senha" class="form-control" minlength="6" required>
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="submit" class="btn btn-success">Salvar Nova Senha</button>
-                                                </div>
-                                            </form>
+                                        <div class="mb-3">
+                                            <label for="confirmar_senha" class="form-label">Confirmar Nova Senha</label>
+                                            <input type="password" name="confirmar_senha" id="confirmar_senha" class="form-control" minlength="6" required>
                                         </div>
                                     </div>
-                                </div>
-                                <script>
-                                // Foca no campo de senha ao abrir o modal
-                                document.getElementById('nova_senha').focus();
-                                </script>
-                                <?php endif; ?>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-success">Salvar Nova Senha</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <script>
+                        // Foca no campo de senha ao abrir o modal
+                        document.getElementById('nova_senha').focus();
+                    </script>
+                <?php endif; ?>
 
-                                <p class="mt-3 text-center"><a href="login.php">Voltar ao login</a></p>
+                <p class="mt-3 text-center"><a href="login.php">Voltar ao login</a></p>
             </div>
         </div>
     </div>
 </body>
+
 </html>

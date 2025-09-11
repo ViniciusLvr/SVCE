@@ -23,21 +23,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cpf'])) {
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <title>Recuperar Senha - Compre Fácil</title>
+    <link rel="icon" href="../img/CompreFacil.png" type="image/png">
+    <link rel="stylesheet" href="../assets/style/animated-gradient.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body class="bg-light">
 
-<nav class="navbar" style="background: rgba(33, 37, 41, 0.85);">
-  <div class="container">
-    <a class="navbar-brand d-flex align-items-center" href="#">
-      <img src="../img/CompreFacil.png" alt="Logo do Sistema Compre Fácil" width="48" height="40" class="me-2" style="object-fit:contain;">
-      <span class="fw-bold text-white">Compre Fácil</span>
-    </a>
-  </div>
-</nav>
+    <nav class="navbar" style="background: rgba(33, 37, 41, 0.85);">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="login.php">
+                <img src="../img/CompreFacil.png" alt="Logo do Sistema Compre Fácil" width="48" height="40" class="me-2" style="object-fit:contain;">
+                <span class="fw-bold text-white">Compre Fácil</span>
+            </a>
+        </div>
+    </nav>
 
     <div class="container mt-5" style="max-width: 400px;">
         <div class="card shadow">
@@ -58,5 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cpf'])) {
             </div>
         </div>
     </div>
+
 </body>
+
 </html>
