@@ -141,6 +141,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: produto.php");
         exit();
     }
+
+}
+
+// Listar produtos com estoque crítico
+    function produtosEstoqueCritico($limite = 5) {
+    global $pdo;
+    $sql = "SELECT * FROM produtos WHERE quantidade_estoque <= :limite ORDER BY quantidade_estoque ASC";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['limite' => $limite]);
+    return $stmt->fetchAll();
 }
 
 // =================== CARREGAR DADOS ===================
@@ -150,6 +160,7 @@ $total_paginas = ceil($total_registros / $registros_por_pagina);
 $produtos = listarProdutos($registros_por_pagina, $offset);
 $categorias = $pdo->query("SELECT * FROM categorias")->fetchAll();
 $fornecedores = $pdo->query("SELECT * FROM fornecedor")->fetchAll();
+$estoqueCritico = produtosEstoqueCritico(5); // 5 é o limite mínimo do estoque
 ?>
 
 <!DOCTYPE html>
@@ -161,6 +172,18 @@ $fornecedores = $pdo->query("SELECT * FROM fornecedor")->fetchAll();
 </head>
 <body class="container mt-5">
     <h1 class="mb-4">Gerenciar Produtos</h1>
+
+    <!-- Alertas de estoque crítico -->
+     <?php if (!empty($estoqueCritico)): ?>
+<div class="alert alert-danger">
+    <strong>Atenção!</strong> Alguns produtos estão com estoque crítico:
+    <ul>
+        <?php foreach ($estoqueCritico as $ec): ?>
+            <li><?= htmlspecialchars($ec['nome']) ?> - Estoque: <?= $ec['quantidade_estoque'] ?></li>
+        <?php endforeach; ?>
+    </ul>
+</div>
+<?php endif; ?>
 
     <?php if (isset($_SESSION['produto_duplicado'])): ?>
     <div class="alert alert-warning">

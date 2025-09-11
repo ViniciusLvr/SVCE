@@ -17,7 +17,7 @@ require_once '../config/auth.php';
 <nav class="navbar" style="background: rgba(33, 37, 41, 0.85); mb-4;">
   <div class="container">
     <a class="navbar-brand d-flex align-items-center" href="#">
-      <img src="../img/CompreFácil.png" alt="Logo do Sistema Compre Fácil" width="48" height="40" class="me-2" style="object-fit:contain;">
+      <img src="../img/CompreFacil.png" alt="Logo do Sistema Compre Fácil" width="48" height="40" class="me-2" style="object-fit:contain;">
       <span class="fw-bold text-white">Compre Fácil</span>
     </a>
 

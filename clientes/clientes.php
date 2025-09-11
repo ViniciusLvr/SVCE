@@ -126,7 +126,7 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <input type="text" name="cpf_cnpj" class="form-control cpf" placeholder="CPF" pattern="\d{11}" title="Digite o CPF (11 dígitos)" required>
         </div>
         <div class="col" id="campoCNPJ" style="display:none;">
-            <input type="text" name="cpf_cnpj" class="form-control cnpj" placeholder="CNPJ" pattern="\d{14}" title="Digite o CNPJ (14 dígitos)">
+            <input type="text" name="cpf_cnpj" class="form-control cnpj" placeholder="CNPJ" pattern="\d{18}" title="Digite o CNPJ (14 dígitos)">
         </div>
     </div>
     <div class="row mb-3">
