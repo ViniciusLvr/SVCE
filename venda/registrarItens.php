@@ -41,7 +41,7 @@ try {
     // Confirmar transação
     $pdo->commit();
 
-    header("Location: listar_vendas.php");
+    header("Location: listarVendas.php");
     exit;
 
 } catch (Exception $e) {

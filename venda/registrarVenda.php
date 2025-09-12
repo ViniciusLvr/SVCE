@@ -32,7 +32,7 @@ require "../config/conexao.php";
     <div class="container bg-light p-4 rounded shadow-sm mb-5 mt-5">
         <h1 class="mb-4">Registrar Venda</h1>
 
-        <form action="registrar_itens.php" method="POST">
+        <form action="registrarItens.php" method="POST">
             <!-- Select de clientes -->
             <div class="mb-3">
                 <label for="cliente" class="form-label">Selecionar Cliente</label>
@@ -90,7 +90,7 @@ require "../config/conexao.php";
             <h4 id="total-venda">Total: R$ 0,00</h4>
 
             <button type="submit" class="btn btn-primary">Registrar Venda</button>
-            <a href="listar_vendas.php" class="btn btn-outline-secondary ms-2">Ver Vendas</a>
+            <a href="listarVendas.php" class="btn btn-outline-secondary ms-2">Ver Vendas</a>
         </form>
     </div>
 
@@ -105,6 +105,7 @@ require "../config/conexao.php";
             });
             novoItem.querySelector('select').selectedIndex = 0;
             container.appendChild(novoItem);
+            atualizarPrecosIniciais();
             calcularTotal();
         }
 
@@ -160,6 +161,30 @@ require "../config/conexao.php";
                 }
             }
         });
+
+        function atualizarPrecosIniciais() {
+            document.querySelectorAll('.item-venda').forEach(function(itemDiv) {
+                const select = itemDiv.querySelector('select[name="produto_id[]"]');
+                const precoInput = itemDiv.querySelector('input[name="preco_unitario[]"]');
+                const produtoId = select.value;
+                if (produtoId) {
+                    fetch(`get_preco_produto.php?id=${produtoId}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.preco !== undefined) {
+                                precoInput.value = parseFloat(data.preco).toFixed(2);
+                                calcularTotal();
+                            } else {
+                                precoInput.value = "0.00";
+                            }
+                        })
+                        .catch(err => {
+                            precoInput.value = "0.00";
+                        });
+                }
+            });
+        }
+        document.addEventListener('DOMContentLoaded', atualizarPrecosIniciais);
     </script>
 </body>
 
