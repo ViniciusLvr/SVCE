@@ -95,6 +95,45 @@ require "../config/conexao.php";
     </div>
 
     <script>
+
+        function atualizarPrecoItem(itemDiv) {
+            const select = itemDiv.querySelector('select[name="produto_id[]"]');
+            const precoInput = itemDiv.querySelector('input[name="preco_unitario[]"]');
+            const produtoId = select.value;
+            if (produtoId) {
+                fetch(`get_preco_produto.php?id=${produtoId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.preco !== undefined) {
+                            precoInput.value = parseFloat(data.preco).toFixed(2);
+                        } else {
+                            precoInput.value = "0.00";
+                        }
+                        calcularTotal();
+                    })
+                    .catch(err => {
+                        precoInput.value = "0.00";
+                        calcularTotal();
+                    });
+            } else {
+                precoInput.value = "0.00";
+                calcularTotal();
+            }
+        }
+
+        function atualizarPrecosTodosItens() {
+            document.querySelectorAll('.item-venda').forEach(atualizarPrecoItem);
+        }
+
+        document.addEventListener('DOMContentLoaded', atualizarPrecosTodosItens);
+
+        document.addEventListener('change', function(e) {
+            if (e.target.matches('select[name="produto_id[]"]')) {
+                const itemDiv = e.target.closest('.item-venda');
+                atualizarPrecoItem(itemDiv);
+            }
+        });
+
         function adicionarItem() {
             const container = document.getElementById('itens-container');
             const item = container.querySelector('.item-venda');
@@ -105,7 +144,7 @@ require "../config/conexao.php";
             });
             novoItem.querySelector('select').selectedIndex = 0;
             container.appendChild(novoItem);
-            atualizarPrecosIniciais();
+            atualizarPrecoItem(novoItem);
             calcularTotal();
         }
 
