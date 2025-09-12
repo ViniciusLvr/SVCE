@@ -83,6 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <img src="../img/CompreFacil.png" alt="Logo do Sistema Compre Fácil" width="48" height="40" class="me-2" style="object-fit:contain;">
                 <span class="fw-bold text-white">Compre Fácil</span>
             </a>
+            <a href="login.php" class="btn btn-danger">Voltar para o Login</a>
         </div>
     </nav>
     <div class="container">
@@ -122,11 +123,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <label for="psecreta" class="form-label">Qual sua cor preferida?</label>
                     <input type="psecreta" class="form-control" name="psecreta" id="psecreta" required>
                 </div>
-                <button type="submit" class="btn btn-primary">Cadastrar</button>
-
-                <a href="login.php" class="btn btn-danger">Voltar para o Login</a>
-
-
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-success">Cadastrar</button>
+                </div>
             </form>
         </div>
     </div>
