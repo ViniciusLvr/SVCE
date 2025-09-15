@@ -207,12 +207,16 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             $documento = $f['cpf'] ?: $f['cnpj'];
                                             ?>
                                             <label class="form-label">CPF/CNPJ</label>
-                                            <select class="form-select" name="tipoDocumento">
-                                                <option value="CPF" <?= $tipoDocumento === 'CPF' ? 'selected' : '' ?>>CPF</option>
-                                                <option value="CNPJ" <?= $tipoDocumento === 'CNPJ' ? 'selected' : '' ?>>CNPJ</option>
-                                            </select>
-                                            <div class="mb-3">
-                                                <input type="text" name="cpf_cnpj" class="form-control" value="<?= htmlspecialchars($documento) ?>" required>
+                                            <div class="row g-2 align-items-center mb-3">
+                                                <div class="col-auto">
+                                                    <select class="form-select" name="tipoDocumento">
+                                                        <option value="CPF" <?= $tipoDocumento === 'CPF' ? 'selected' : '' ?>>CPF</option>
+                                                        <option value="CNPJ" <?= $tipoDocumento === 'CNPJ' ? 'selected' : '' ?>>CNPJ</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col">
+                                                    <input type="text" name="cpf_cnpj" class="form-control" value="<?= htmlspecialchars($documento) ?>" required>
+                                                </div>
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label">Telefone</label>
