@@ -289,10 +289,23 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <input type="text" name="nome" class="form-control"
                                                 value="<?= htmlspecialchars($cliente['nome']) ?>" >
                                         </div>
+                                        <?php
+                                            $tipoDoc = !empty($cliente['cpf']) ? 'CPF' : 'CNPJ';
+                                            $cpf = $cliente['cpf'] ?? '';
+                                            $cnpj = $cliente['cnpj'] ?? '';
+                                        ?>
                                         <div class="mb-3">
-                                            <label class="form-label">CPF/CNPJ</label>
-                                            <input type="text" name="cpf_cnpj" class="form-control"
-                                                value="<?= htmlspecialchars($cliente['cpf'] ?: $cliente['cnpj']) ?>" >
+                                            <label class="form-label">Tipo de Documento</label>
+                                            <select class="form-select mb-2 tipoDocumentoEditar" name="tipoDocumento">
+                                                <option value="CPF" <?= $tipoDoc === 'CPF' ? 'selected' : '' ?>>CPF</option>
+                                                <option value="CNPJ" <?= $tipoDoc === 'CNPJ' ? 'selected' : '' ?>>CNPJ</option>
+                                            </select>
+                                            <div id="campoCPFEditar<?= $cliente['id'] ?>" class="mb-2" style="display:<?= $tipoDoc === 'CPF' ? 'block' : 'none' ?>;">
+                                                <input type="text" name="cpf" class="form-control cpfEditar" placeholder="CPF" value="<?= htmlspecialchars($cpf) ?>">
+                                            </div>
+                                            <div id="campoCNPJEditar<?= $cliente['id'] ?>" class="mb-2" style="display:<?= $tipoDoc === 'CNPJ' ? 'block' : 'none' ?>;">
+                                                <input type="text" name="cnpj" class="form-control cnpjEditar" placeholder="CNPJ" value="<?= htmlspecialchars($cnpj) ?>">
+                                            </div>
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">Telefone</label>
@@ -346,6 +359,34 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     var mask = (val.replace(/\D/g, '').length === 11) ? masks[1] : masks[0];
                     $('.telefone').mask(mask, options);
                 }
+            });
+
+            // --- MODAL DE EDIÇÃO CLIENTE ---
+            $('.tipoDocumentoEditar').each(function() {
+                var select = $(this);
+                var modalId = select.closest('.modal').attr('id').replace('editarCliente', '');
+                var campoCPF = $('#campoCPFEditar' + modalId);
+                var campoCNPJ = $('#campoCNPJEditar' + modalId);
+                var inputCPF = campoCPF.find('input');
+                var inputCNPJ = campoCNPJ.find('input');
+
+                function alternarCamposModal() {
+                    if (select.val() === 'CPF') {
+                        campoCPF.show();
+                        campoCNPJ.hide();
+                        inputCPF.prop('required', true).prop('disabled', false);
+                        inputCNPJ.prop('required', false).prop('disabled', true).val('');
+                        inputCPF.mask('000.000.000-00');
+                    } else {
+                        campoCPF.hide();
+                        campoCNPJ.show();
+                        inputCPF.prop('required', false).prop('disabled', true).val('');
+                        inputCNPJ.prop('required', true).prop('disabled', false);
+                        inputCNPJ.mask('00.000.000/0000-00');
+                    }
+                }
+                select.change(alternarCamposModal);
+                alternarCamposModal();
             });
         });
     </script>
