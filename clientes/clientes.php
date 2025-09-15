@@ -82,7 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_id']) && !isset
     $cnpj = $_POST['cpf_cnpj'] ?? '';
     $tipoDocumento = $_POST['tipoDocumento'] ?? '';
 
-    if ($id && $nome && $telefone && $endereco && $cpf_cnpj && $tipoDocumento) {
+    if ($id && $nome && $telefone && $endereco && ($cpf || $cnpj) && $tipoDocumento) {
         atualizarCliente($pdo, $id, $nome, $telefone, $endereco, $cpf, $cnpj, $tipoDocumento);
         header("Location: clientes.php");
         exit();
