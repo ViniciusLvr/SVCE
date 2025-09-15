@@ -138,7 +138,7 @@ $categorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <td>
                                     <form method="post" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir esta categoria?');">
                                         <input type="hidden" name="excluir_id" value="<?= htmlspecialchars($categoria['id']) ?>">
-                                        <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                                        <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash3"></i>Excluir</button>
                                     </form>
                                     <!-- Botão para abrir o modal de edição -->
                                     <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editarCategoria<?= $categoria['id'] ?>">
