@@ -207,7 +207,7 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <form method="post" class="border p-4 rounded shadow-sm bg-light mb-5">
                 <div class="row mb-3">
                     <div class="col">
-                        <input type="text" name="nome" class="form-control" placeholder="Nome" required>
+                        <input type="text" name="nome" class="form-control" placeholder="Nome" pattern="[A-Za-zÀ-ÿ\s]+" required>
                     </div>
                     <div class="col">
                         <select class="form-select" id="tipoDocumento" name="tipoDocumento">
@@ -300,10 +300,10 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <input type="hidden" name="editar_id" value="<?= $cliente['id'] ?>">
+                                        <input type="hidden" name="editar_id" value="<?= $cliente['id'] ?>" >
                                         <div class="mb-3">
-                                            <label class="form-label">Nome</label>
-                                            <input type="text" name="nome" class="form-control"
+                                            <label class="form-label" >Nome</label>
+                                            <input type="text" name="nome" class="form-control" pattern="[A-Za-zÀ-ÿ\s]+"
                                                 value="<?= htmlspecialchars($cliente['nome']) ?>" >
                                         </div>
                                         <?php
