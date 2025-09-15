@@ -102,23 +102,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['excluir_id'])) {
 
 // Cadastro de novo cliente
 if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['editar_id']) && !isset($_POST['excluir_id'])) {
+    $tipoDocumento = $_POST['tipoDocumento'] ?? '';
     $nome = $_POST['nome'] ?? '';
+    $cpf_cnpj = preg_replace('/\D/', '', $_POST['cpf_cnpj'] ?? '');
     $telefone = preg_replace('/\D/', '', $_POST['telefone'] ?? '');
     $endereco = $_POST['endereco'] ?? '';
-    $cpf_cnpj = preg_replace('/\D/', '', $_POST['cpf_cnpj'] ?? '');
-    $tipoDocumento = $_POST['tipoDocumento'] ?? '';
 
     $cpf = $tipoDocumento === 'CPF' ? $cpf_cnpj : '';
     $cnpj = $tipoDocumento === 'CNPJ' ? $cpf_cnpj : '';
 
-    if ($nome && $telefone && $endereco && $cpf_cnpj && $tipoDocumento) {
+    $documentoValido = false;
+    if ($tipoDocumento === 'CPF' && strlen($cpf) === 11) {
+        $documentoValido = true;
+    } else if ($tipoDocumento === 'CNPJ' && strlen($cnpj) === 14) {
+        $documentoValido = true;
+    }
+
+    if ($nome && $telefone && $endereco && $documentoValido && $tipoDocumento) {
         if (adicionarCliente($pdo, $nome, $telefone, $endereco, $cpf, $cnpj, $tipoDocumento)) {
             header("Location: clientes.php");
             exit();
         }
         // Se não cadastrar, a função já mostra o erro
     } else {
-        echo "<div class='alert alert-danger'>Todos os campos são obrigatórios para cadastrar.</div>";
+        echo "<div class='alert alert-danger'>Todos os campos são obrigatórios para cadastrar e o CPF/CNPJ deve estar no formato correto.</div>";
     }
 }
 
