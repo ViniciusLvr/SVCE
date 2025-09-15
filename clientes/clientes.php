@@ -123,18 +123,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['excluir_id'])) {
 if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['editar_id']) && !isset($_POST['excluir_id'])) {
     $tipoDocumento = $_POST['tipoDocumento'] ?? '';
     $nome = $_POST['nome'] ?? '';
-    $cpf_cnpj = preg_replace('/\D/', '', $_POST['cpf_cnpj'] ?? '');
     $telefone = preg_replace('/\D/', '', $_POST['telefone'] ?? '');
     $endereco = $_POST['endereco'] ?? '';
 
-    $cpf = $_POST['cpf'] ?? '';
-    $cnpj = $_POST['cnpj'] ?? '';
+    $cpf = preg_replace('/\D/', '', $_POST['cpf'] ?? '');
+    $cnpj = preg_replace('/\D/', '', $_POST['cnpj'] ?? '');
 
     $documentoValido = false;
-    if ($tipoDocumento === 'CPF' && strlen($cpf) === 11) {
-        $documentoValido = true;
-    } else if ($tipoDocumento === 'CNPJ' && strlen($cnpj) === 14) {
-        $documentoValido = true;
+    $valorDocumento = '';
+    if ($tipoDocumento === 'CPF') {
+        $valorDocumento = $cpf;
+        if (strlen($cpf) === 11) {
+            $documentoValido = true;
+        }
+    } else if ($tipoDocumento === 'CNPJ') {
+        $valorDocumento = $cnpj;
+        if (strlen($cnpj) === 14) {
+            $documentoValido = true;
+        }
     }
 
     if ($nome && $telefone && $endereco && $documentoValido && $tipoDocumento) {
@@ -144,7 +150,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['editar_id']) && !isse
         }
         // Se não cadastrar, a função já mostra o erro
     } else {
-        echo "<div class='alert alert-danger'>Todos os campos são obrigatórios para cadastrar e o CPF/CNPJ deve estar no formato correto. Valor recebido: '$cpf_cnpj' (".strlen($cpf_cnpj)." dígitos)</div>";
+        echo "<div class='alert alert-danger'>Todos os campos são obrigatórios para cadastrar e o CPF/CNPJ deve estar no formato correto. Valor recebido: '" . htmlspecialchars($valorDocumento) . "' (" . strlen($valorDocumento) . " dígitos)</div>";
     }
 }
 
