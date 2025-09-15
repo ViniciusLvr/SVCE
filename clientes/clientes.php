@@ -73,23 +73,42 @@ function atualizarCliente($pdo, $id, $nome, $telefone, $endereco, $cpf, $cnpj, $
 
 
 // Verifica envio do formulário de cadastro
+// Verifica envio do formulário de edição
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_id']) && !isset($_POST['excluir_id'])) {
     $id = $_POST['editar_id'];
-    $nome = $_POST['nome'] ?? '';
-    $telefone = $_POST['telefone'] ?? '';
-    $endereco = $_POST['endereco'] ?? '';
-    $cpf = $_POST['cpf_cnpj'] ?? '';
-    $cnpj = $_POST['cpf_cnpj'] ?? '';
-    $tipoDocumento = $_POST['tipoDocumento'] ?? '';
 
-    if ($id && $nome && $telefone && $endereco && ($cpf || $cnpj) && $tipoDocumento) {
-        atualizarCliente($pdo, $id, $nome, $telefone, $endereco, $cpf, $cnpj, $tipoDocumento);
-        header("Location: clientes.php");
+    // Busca os dados atuais do cliente
+    $stmt = $pdo->prepare("SELECT * FROM clientes WHERE id = :id");
+    $stmt->execute([':id' => $id]);
+    $clienteExistente = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$clienteExistente) {
+        echo "<div class='alert alert-danger'>Cliente não encontrado.</div>";
         exit();
-    } else {
-        echo "<div class='alert alert-danger'>Todos os campos são obrigatórios para editar.</div>";
     }
+
+    // Se novos dados foram enviados, usa eles; senão, usa os antigos
+    $nome = trim($_POST['nome'] ?? '') ?: $clienteExistente['nome'];
+    $telefone = trim($_POST['telefone'] ?? '') ?: $clienteExistente['telefone'];
+    $endereco = trim($_POST['endereco'] ?? '') ?: $clienteExistente['endereco'];
+    $cpf_cnpj = trim($_POST['cpf_cnpj'] ?? '');
+
+    // Descobre se é CPF ou CNPJ com base no que já está salvo
+    $tipoDocumento = !empty($clienteExistente['cpf']) ? 'CPF' : 'CNPJ';
+
+    if ($tipoDocumento === 'CPF') {
+        $cpf = $cpf_cnpj ?: $clienteExistente['cpf'];
+        $cnpj = '';
+    } else {
+        $cnpj = $cpf_cnpj ?: $clienteExistente['cnpj'];
+        $cpf = '';
+    }
+
+    atualizarCliente($pdo, $id, $nome, $telefone, $endereco, $cpf, $cnpj, $tipoDocumento);
+    header("Location: clientes.php");
+    exit();
 }
+
 
 
 // Verifica envio do formulário de exclusão
@@ -262,22 +281,22 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <div class="mb-3">
                                             <label class="form-label">Nome</label>
                                             <input type="text" name="nome" class="form-control"
-                                                value="<?= htmlspecialchars($cliente['nome']) ?>" required>
+                                                value="<?= htmlspecialchars($cliente['nome']) ?>" >
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">CPF/CNPJ</label>
                                             <input type="text" name="cpf_cnpj" class="form-control"
-                                                value="<?= htmlspecialchars($cliente['cpf'] ?: $cliente['cnpj']) ?>" required>
+                                                value="<?= htmlspecialchars($cliente['cpf'] ?: $cliente['cnpj']) ?>" >
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">Telefone</label>
                                             <input type="text" name="telefone" class="form-control"
-                                                value="<?= htmlspecialchars($cliente['telefone']) ?>" required>
+                                                value="<?= htmlspecialchars($cliente['telefone']) ?>" >
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">Endereço</label>
                                             <input type="text" name="endereco" class="form-control"
-                                                value="<?= htmlspecialchars($cliente['endereco']); ?>" required>
+                                                value="<?= htmlspecialchars($cliente['endereco']); ?>" >
                                         </div>
                                     </div>
                                     <div class="modal-footer">
