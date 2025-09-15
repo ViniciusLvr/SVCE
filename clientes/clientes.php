@@ -125,7 +125,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['editar_id']) && !isse
         }
         // Se não cadastrar, a função já mostra o erro
     } else {
-        echo "<div class='alert alert-danger'>Todos os campos são obrigatórios para cadastrar e o CPF/CNPJ deve estar no formato correto.</div>";
+        echo "<div class='alert alert-danger'>Todos os campos são obrigatórios para cadastrar e o CPF/CNPJ deve estar no formato correto. Valor recebido: '$cpf_cnpj' (".strlen($cpf_cnpj)." dígitos)</div>";
     }
 }
 
