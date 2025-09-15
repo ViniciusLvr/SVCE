@@ -254,17 +254,18 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <td><?= htmlspecialchars($cliente['endereco']) ?></td>
                                 <td><?= htmlspecialchars($cliente['created_at']) ?></td>
                                 <td>
+                                    <!-- Botão Excluir -->
+                                    <form method="post" class="d-inline"
+                                    onsubmit="return confirm('Tem certeza que deseja excluir este cliente?');">
+                                    <input type="hidden" name="excluir_id" value="<?= htmlspecialchars($cliente['id']) ?>">
+                                    <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                                    
                                     <!-- Botão Editar (abre modal) -->
                                     <button type="button" class="btn btn-sm btn-primary"
                                         data-bs-toggle="modal"
                                         data-bs-target="#editarCliente<?= $cliente['id'] ?>">
                                         Editar
                                     </button>
-                                    <!-- Botão Excluir -->
-                                    <form method="post" class="d-inline"
-                                        onsubmit="return confirm('Tem certeza que deseja excluir este cliente?');">
-                                        <input type="hidden" name="excluir_id" value="<?= htmlspecialchars($cliente['id']) ?>">
-                                        <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
                                     </form>
                                 </td>
                             </tr>
