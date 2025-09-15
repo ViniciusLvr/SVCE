@@ -108,8 +108,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['editar_id']) && !isse
     $telefone = preg_replace('/\D/', '', $_POST['telefone'] ?? '');
     $endereco = $_POST['endereco'] ?? '';
 
-    $cpf = $tipoDocumento === 'CPF' ? $cpf_cnpj : '';
-    $cnpj = $tipoDocumento === 'CNPJ' ? $cpf_cnpj : '';
+    $cpf = $_POST['cpf'] ?? '';
+    $cnpj = $_POST['cnpj'] ?? '';
 
     $documentoValido = false;
     if ($tipoDocumento === 'CPF' && strlen($cpf) === 11) {
@@ -175,12 +175,12 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </select>
                     </div>
                     <div class="col" id="campoCPF">
-                        <input type="text" name="cpf_cnpj" class="form-control cpf" placeholder="CPF"
+                        <input type="text" name="cpf" class="form-control cpf" placeholder="CPF"
                             pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" title="Formato: 000.000.000-00" required>
                     </div>
                     <div class="col" id="campoCNPJ" style="display:none;">
-                        <input type="text" name="cpf_cnpj" class="form-control cnpj" placeholder="CNPJ"
-                            pattern="\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}" title="Formato: 00.000.000/0000-00">
+                        <input type="text" name="cnpj" class="form-control cnpj" placeholder="CNPJ"
+                            pattern="\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}" title="Formato: 00.000.000/0000-00" disabled>
                     </div>
                 </div>
                 <div class="row mb-3">
@@ -300,15 +300,17 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <script>
         // Alterna campos CPF/CNPJ no formulário de cadastro
         $(document).ready(function() {
-            $('#tipoDocumento').change(function() {
-                if ($(this).val() === 'CPF') {
-                    $('#campoCPF').show().find('input').prop('required', true);
-                    $('#campoCNPJ').hide().find('input').prop('required', false).val('');
+            function alternarCamposDocumento() {
+                if ($('#tipoDocumento').val() === 'CPF') {
+                    $('#campoCPF').show().find('input').prop('required', true).prop('disabled', false);
+                    $('#campoCNPJ').hide().find('input').prop('required', false).prop('disabled', true).val('');
                 } else {
-                    $('#campoCPF').hide().find('input').prop('required', false).val('');
-                    $('#campoCNPJ').show().find('input').prop('required', true);
+                    $('#campoCPF').hide().find('input').prop('required', false).prop('disabled', true).val('');
+                    $('#campoCNPJ').show().find('input').prop('required', true).prop('disabled', false);
                 }
-            }).trigger('change');
+            }
+            $('#tipoDocumento').change(alternarCamposDocumento);
+            alternarCamposDocumento();
 
             // Máscara para telefone (fixo e celular)
             $('.telefone').mask(function(val) {
