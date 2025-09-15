@@ -10,9 +10,19 @@ function adicionarCategoria($pdo, $nome)
 
 function excluirCategoria($pdo, $id)
 {
-    $sql = "DELETE FROM categorias WHERE id = :id";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([':id' => $id]);
+    try {
+        $sql = "DELETE FROM categorias WHERE id = :id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':id' => $id]);
+        return true;
+    } catch (PDOException $e) {
+        if ($e->getCode() == '23000' && strpos($e->getMessage(), 'a foreign key constraint fails') !== false) {
+            echo "<div class='alert alert-danger'>Não é possível excluir a categoria pois ela está relacionada a outros registros (ex: produtos).</div>";
+        } else {
+            echo "<div class='alert alert-danger'>Erro ao excluir categoria: ".$e->getMessage()."</div>";
+        }
+        return false;
+    }
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['nome'])) {
@@ -37,9 +47,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['nome'])) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['excluir_id'])) {
     $excluir_id = $_POST['excluir_id'];
-    excluirCategoria($pdo, $excluir_id);
-    header("Location: categoria.php");
-    exit();
+    ob_start();
+    $ok = excluirCategoria($pdo, $excluir_id);
+    $msg = ob_get_clean();
+    if ($ok) {
+        header("Location: categoria.php");
+        exit();
+    } else {
+        echo $msg;
+    }
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_id'])) {

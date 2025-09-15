@@ -98,9 +98,18 @@ function editarProduto($id, $nome, $preco, $quantidade, $categoria_id, $forneced
 function deletarProduto($id)
 {
     global $pdo;
-    $sql = "DELETE FROM produtos WHERE id = :id";
-    $stmt = $pdo->prepare($sql);
-    return $stmt->execute(['id' => $id]);
+    try {
+        $sql = "DELETE FROM produtos WHERE id = :id";
+        $stmt = $pdo->prepare($sql);
+        return $stmt->execute(['id' => $id]);
+    } catch (PDOException $e) {
+        if ($e->getCode() == '23000' && strpos($e->getMessage(), 'a foreign key constraint fails') !== false) {
+            echo "<div class='alert alert-danger'>Não é possível excluir o produto pois ele está relacionado a outros registros (ex: vendas).</div>";
+        } else {
+            echo "<div class='alert alert-danger'>Erro ao excluir produto: ".$e->getMessage()."</div>";
+        }
+        return false;
+    }
 }
 
 // =================== AÇÕES ===================
@@ -162,9 +171,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Deletar produto
     if (isset($_POST['deletar_id'])) {
-        deletarProduto($_POST['deletar_id']);
-        header("Location: produto.php");
-        exit();
+        ob_start();
+        $ok = deletarProduto($_POST['deletar_id']);
+        $msg = ob_get_clean();
+        if ($ok) {
+            header("Location: produto.php");
+            exit();
+        } else {
+            echo $msg;
+        }
     }
 }
 

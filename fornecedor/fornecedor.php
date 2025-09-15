@@ -22,9 +22,19 @@ function adicionarFornecedor($pdo, $nome, $cpf, $cnpj, $telefone)
 
 function excluirFornecedor($pdo, $id)
 {
-    $sql = "DELETE FROM fornecedor WHERE id = :id";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([':id' => $id]);
+    try {
+        $sql = "DELETE FROM fornecedor WHERE id = :id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':id' => $id]);
+        return true;
+    } catch (PDOException $e) {
+        if ($e->getCode() == '23000' && strpos($e->getMessage(), 'a foreign key constraint fails') !== false) {
+            echo "<div class='alert alert-danger'>Não é possível excluir o fornecedor pois ele está relacionado a outros registros (ex: produtos).</div>";
+        } else {
+            echo "<div class='alert alert-danger'>Erro ao excluir fornecedor: ".$e->getMessage()."</div>";
+        }
+        return false;
+    }
 }
 
 function atualizarFornecedor($pdo, $id, $nome, $cpf, $cnpj, $telefone)
@@ -66,9 +76,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome'])) {
 // Exclusão
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['excluir_id'])) {
     $excluir_id = $_POST['excluir_id'];
-    excluirFornecedor($pdo, $excluir_id);
-    header("Location: fornecedor.php");
-    exit();
+    ob_start();
+    $ok = excluirFornecedor($pdo, $excluir_id);
+    $msg = ob_get_clean();
+    if ($ok) {
+        header("Location: fornecedor.php");
+        exit();
+    } else {
+        echo $msg;
+    }
 }
 
 // Edição

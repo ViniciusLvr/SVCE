@@ -37,9 +37,19 @@ function adicionarCliente($pdo, $nome, $telefone, $endereco, $cpf, $cnpj, $tipoD
 
 function excluirCliente($pdo, $id)
 {
-    $sql = "DELETE FROM clientes WHERE id = :id";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([':id' => $id]);
+    try {
+        $sql = "DELETE FROM clientes WHERE id = :id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':id' => $id]);
+        return true;
+    } catch (PDOException $e) {
+        if ($e->getCode() == '23000' && strpos($e->getMessage(), 'a foreign key constraint fails') !== false) {
+            echo "<div class='alert alert-danger'>Não é possível excluir o cliente pois ele está relacionado a outros registros (ex: vendas).</div>";
+        } else {
+            echo "<div class='alert alert-danger'>Erro ao excluir cliente: ".$e->getMessage()."</div>";
+        }
+        return false;
+    }
 }
 
 function atualizarCliente($pdo, $id, $nome, $telefone, $endereco, $cpf, $cnpj, $tipoDocumento)
@@ -114,9 +124,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_id']) && !isset
 // Verifica envio do formulário de exclusão
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['excluir_id'])) {
     $excluir_id = $_POST['excluir_id'];
-    excluirCliente($pdo, $excluir_id);
-    header("Location: clientes.php");
-    exit();
+    ob_start();
+    $ok = excluirCliente($pdo, $excluir_id);
+    $msg = ob_get_clean();
+    if ($ok) {
+        header("Location: clientes.php");
+        exit();
+    } else {
+        echo $msg;
+    }
 }
 
 // Cadastro de novo cliente
@@ -259,7 +275,7 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     onsubmit="return confirm('Tem certeza que deseja excluir este cliente?');">
                                     <input type="hidden" name="excluir_id" value="<?= htmlspecialchars($cliente['id']) ?>">
                                     <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
-                                    
+
                                     <!-- Botão Editar (abre modal) -->
                                     <button type="button" class="btn btn-sm btn-primary"
                                         data-bs-toggle="modal"
