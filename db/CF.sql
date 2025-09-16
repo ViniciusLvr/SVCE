@@ -186,3 +186,39 @@ CREATE TABLE `vendas` (
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2025-09-15 11:03:37
+
+
+
+
+
+
+-- REMODELAGEM DA TABELA CLIENTES PARA ENDEREÇO
+
+-- Tabela de clientes (mantida com poucas alterações)
+-- DROP TABLE IF EXISTS clientes;
+
+-- CREATE TABLE clientes (
+--   id INT AUTO_INCREMENT PRIMARY KEY,
+--   nome VARCHAR(100) NOT NULL,
+--   telefone VARCHAR(20) NOT NULL,
+--   cpf CHAR(11) UNIQUE,
+--   cnpj CHAR(14) UNIQUE,
+--   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- );
+
+-- -- Tabela de endereços relacionada ao cliente
+-- DROP TABLE IF EXISTS enderecos;
+
+-- CREATE TABLE enderecos (
+--   id INT AUTO_INCREMENT PRIMARY KEY,
+--   cliente_id INT NOT NULL,
+--   cep CHAR(8) NOT NULL,
+--   logradouro VARCHAR(100),
+--   numero VARCHAR(10),
+--   complemento VARCHAR(50),
+--   bairro VARCHAR(50),
+--   cidade VARCHAR(50),
+--   estado CHAR(2),
+--   FOREIGN KEY (cliente_id) REFERENCES clientes(id) ON DELETE CASCADE
+-- );
+
