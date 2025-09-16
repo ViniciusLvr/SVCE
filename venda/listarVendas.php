@@ -100,7 +100,7 @@ $vendas = $stmt->fetchAll();
                     </tbody>
                 </table>
             </div>
-            <a href="registrar_venda.php" class="btn btn-primary mt-4">Registrar Nova Venda</a>
+            <a href="registrarVenda.php" class="btn btn-primary mt-4">Registrar Nova Venda</a>
             <a href="../public/painel.php" class="btn btn-danger mt-4 ms-2">Voltar ao painel</a>
 
             <!-- Paginação -->

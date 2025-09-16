@@ -156,7 +156,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_id']) && !isset
     // Se novos dados foram enviados, usa eles; senão, usa os antigos
     $nome = trim($_POST['nome'] ?? '') ?: $clienteExistente['nome'];
     $telefone = trim($_POST['telefone'] ?? '') ?: $clienteExistente['telefone'];
-    $endereco = trim($_POST['endereco'] ?? '') ?: $clienteExistente['endereco'];
+    $endereco = trim($_POST['enderecos'] ?? '') ?: $clienteExistente['enderecos'];
     $cpf_cnpj = trim($_POST['cpf_cnpj'] ?? '');
 
     // Descobre se é CPF ou CNPJ com base no que já está salvo
