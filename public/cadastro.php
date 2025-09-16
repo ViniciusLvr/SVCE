@@ -8,7 +8,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nome = trim($_POST['nome']);
     $email = trim($_POST['email']);
     $senha = $_POST['senha'];
-    $CPF = trim($_POST['CPF']);
+    $CPF = preg_replace('/\D/', '', $_POST['CPF']);
     $psecreta = trim($_POST['psecreta']);
 
     if ($nome && $email && $senha && $CPF && $psecreta) {
@@ -116,8 +116,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <input type="password" class="form-control" name="senha" id="senha" required>
                 </div>
                 <div class="mb-3">
-                    <label for="CPF" class="form-label cpf">CPF</label>
-                    <input type="CPF" class="form-control CPF" name="CPF" id="CPF" required>
+                    <label for="CPF" class="form-label">CPF</label>
+                    <input type="text" class="form-control cpf" name="CPF" id="CPF"
+                           pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" placeholder="000.000.000-00"
+                           title="Digite o CPF no formato 000.000.000-00" required>
                 </div>
                 <div class="mb-3">
                     <label for="psecreta" class="form-label">Qual sua cor preferida?</label>
@@ -130,7 +132,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     <script src="../assets/js/masks.js"></script>
+    <script>
+$(document).ready(function(){
+    $('#CPF').mask('000.000.000-00');
+});
+</script>
 </body>
 
 </html>
