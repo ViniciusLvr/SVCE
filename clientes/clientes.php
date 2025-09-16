@@ -191,8 +191,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['excluir_id'])) {
     }
 }
 
-// Busca clientes e seus endereços
-$stmt = $pdo->query("SELECT c.*, e.cep, e.logradouro, e.numero, e.complemento, e.bairro, e.cidade, e.estado FROM clientes c LEFT JOIN enderecos e ON c.id = e.cliente_id ORDER BY c.created_at DESC");
+// Paginação
+$registros_por_pagina = 10;
+$pagina_atual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+if ($pagina_atual < 1) $pagina_atual = 1;
+$offset = ($pagina_atual - 1) * $registros_por_pagina;
+
+// Contar total de clientes
+$total_clientes = $pdo->query("SELECT COUNT(*) FROM clientes")->fetchColumn();
+$total_paginas = ceil($total_clientes / $registros_por_pagina);
+
+// Busca clientes e seus endereços paginados
+$stmt = $pdo->prepare("SELECT c.*, e.cep, e.logradouro, e.numero, e.complemento, e.bairro, e.cidade, e.estado FROM clientes c LEFT JOIN enderecos e ON c.id = e.cliente_id ORDER BY c.created_at DESC LIMIT :limit OFFSET :offset");
+$stmt->bindValue(':limit', (int)$registros_por_pagina, PDO::PARAM_INT);
+$stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+$stmt->execute();
 $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
@@ -214,7 +227,7 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 
 <body>
-    <nav class="navbar" style="background: rgba(33, 37, 41, 0.85); mb-4;">
+    <nav class="navbar" style="background: rgba(33, 37, 41, 0.85); margin-bottom: 1.5rem;">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="../public/painel.php">
                 <img src="../img/CompreFacil.png" alt="Logo do Sistema Compre Fácil" width="48" height="40" class="me-2"
@@ -355,6 +368,22 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+                <!-- Paginação -->
+                <nav>
+                    <ul class="pagination justify-content-center mt-4">
+                        <li class="page-item <?= ($pagina_atual <= 1) ? 'disabled' : '' ?>">
+                            <a class="page-link" href="?pagina=<?= $pagina_atual - 1 ?>">Anterior</a>
+                        </li>
+                        <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
+                        <li class="page-item <?= ($i == $pagina_atual) ? 'active' : '' ?>">
+                            <a class="page-link" href="?pagina=<?= $i ?>"><?= $i ?></a>
+                        </li>
+                        <?php endfor; ?>
+                        <li class="page-item <?= ($pagina_atual >= $total_paginas) ? 'disabled' : '' ?>">
+                            <a class="page-link" href="?pagina=<?= $pagina_atual + 1 ?>">Próximo</a>
+                        </li>
+                    </ul>
+                </nav>
 
                 <!-- Modais de edição -->
                 <?php foreach ($clientes as $cliente): ?>

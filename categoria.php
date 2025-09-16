@@ -78,7 +78,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_id'])) {
     }
 }
 
-$stmt = $pdo->query("SELECT * FROM categorias ORDER BY created_at DESC");
+$registros_por_pagina = 10;
+$pagina_atual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+if ($pagina_atual < 1) $pagina_atual = 1;
+$offset = ($pagina_atual - 1) * $registros_por_pagina;
+
+// Contar total de categorias
+$total_categorias = $pdo->query("SELECT COUNT(*) FROM categorias")->fetchColumn();
+$total_paginas = ceil($total_categorias / $registros_por_pagina);
+
+// Busca categorias paginadas
+$stmt = $pdo->prepare("SELECT * FROM categorias ORDER BY created_at DESC LIMIT :limit OFFSET :offset");
+$stmt->bindValue(':limit', (int)$registros_por_pagina, PDO::PARAM_INT);
+$stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+$stmt->execute();
 $categorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
@@ -95,10 +108,11 @@ $categorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <body>
 
-    <nav class="navbar" style="background: rgba(33, 37, 41, 0.85); mb-4;">
+    <nav class="navbar" style="background: rgba(33, 37, 41, 0.85); margin-bottom: 1.5rem;">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="#">
-                <img src="img/CompreFacil.png" alt="Logo do Sistema Compre Fácil" width="48" height="40" class="me-2" style="object-fit:contain;">
+                <img src="img/CompreFacil.png" alt="Logo do Sistema Compre Fácil" width="48" height="40" class="me-2"
+                    style="object-fit:contain;">
                 <span class="fw-bold text-white">Compre Fácil</span>
             </a>
 
@@ -131,51 +145,73 @@ $categorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </thead>
                     <tbody>
                         <?php foreach ($categorias as $categoria): ?>
-                            <tr>
-                                <td><?= htmlspecialchars($categoria['id']) ?></td>
-                                <td><?= htmlspecialchars($categoria['nome']) ?></td>
-                                <td><?= htmlspecialchars($categoria['created_at']) ?></td>
-                                <td>
-                                    <form method="post" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir esta categoria?');">
-                                        <input type="hidden" name="excluir_id" value="<?= htmlspecialchars($categoria['id']) ?>">
-                                        <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash3"></i>Excluir</button>
-                                    </form>
-                                    <!-- Botão para abrir o modal de edição -->
-                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editarCategoria<?= $categoria['id'] ?>">
-                                        Editar
-                                    </button>
-                                </td>
-                            </tr>
+                        <tr>
+                            <td><?= htmlspecialchars($categoria['id']) ?></td>
+                            <td><?= htmlspecialchars($categoria['nome']) ?></td>
+                            <td><?= htmlspecialchars($categoria['created_at']) ?></td>
+                            <td>
+                                <form method="post" class="d-inline"
+                                    onsubmit="return confirm('Tem certeza que deseja excluir esta categoria?');">
+                                    <input type="hidden" name="excluir_id"
+                                        value="<?= htmlspecialchars($categoria['id']) ?>">
+                                    <button type="submit" class="btn btn-sm btn-danger"><i
+                                            class="bi bi-trash3"></i>Excluir</button>
+                                </form>
+                                <!-- Botão para abrir o modal de edição -->
+                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#editarCategoria<?= $categoria['id'] ?>">
+                                    Editar
+                                </button>
+                            </td>
+                        </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+                <!-- Paginação -->
+                <nav>
+                    <ul class="pagination justify-content-center mt-4">
+                        <li class="page-item <?= ($pagina_atual <= 1) ? 'disabled' : '' ?>">
+                            <a class="page-link" href="?pagina=<?= $pagina_atual - 1 ?>">Anterior</a>
+                        </li>
+                        <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
+                        <li class="page-item <?= ($i == $pagina_atual) ? 'active' : '' ?>">
+                            <a class="page-link" href="?pagina=<?= $i ?>"><?= $i ?></a>
+                        </li>
+                        <?php endfor; ?>
+                        <li class="page-item <?= ($pagina_atual >= $total_paginas) ? 'disabled' : '' ?>">
+                            <a class="page-link" href="?pagina=<?= $pagina_atual + 1 ?>">Próximo</a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
 
             <!-- Modais de edição -->
             <?php foreach ($categorias as $categoria): ?>
-                <div class="modal fade" id="editarCategoria<?= $categoria['id'] ?>" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <form method="post">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Editar Categoria</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="modal fade" id="editarCategoria<?= $categoria['id'] ?>" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form method="post">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Editar Categoria</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="editar_id" value="<?= $categoria['id'] ?>">
+                                <div class="mb-3">
+                                    <label class="form-label">Nome da Categoria</label>
+                                    <input type="text" name="novo_nome" class="form-control"
+                                        value="<?= htmlspecialchars($categoria['nome']) ?>" required>
                                 </div>
-                                <div class="modal-body">
-                                    <input type="hidden" name="editar_id" value="<?= $categoria['id'] ?>">
-                                    <div class="mb-3">
-                                        <label class="form-label">Nome da Categoria</label>
-                                        <input type="text" name="novo_nome" class="form-control" value="<?= htmlspecialchars($categoria['nome']) ?>" required>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                </div>
-                            </form>
-                        </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                                <button type="button" class="btn btn-secondary"
+                                    data-bs-dismiss="modal">Cancelar</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
+            </div>
             <?php endforeach; ?>
 
 

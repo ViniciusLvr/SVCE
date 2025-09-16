@@ -114,7 +114,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_id'])) {
 }
 
 // Listagem
-$stmt = $pdo->query("SELECT * FROM fornecedor ORDER BY created_at DESC");
+$registros_por_pagina = 10;
+$pagina_atual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+if ($pagina_atual < 1) $pagina_atual = 1;
+$offset = ($pagina_atual - 1) * $registros_por_pagina;
+
+// Contar total de fornecedores
+$total_fornecedores = $pdo->query("SELECT COUNT(*) FROM fornecedor")->fetchColumn();
+$total_paginas = ceil($total_fornecedores / $registros_por_pagina);
+
+// Busca fornecedores paginados
+$stmt = $pdo->prepare("SELECT * FROM fornecedor ORDER BY created_at DESC LIMIT :limit OFFSET :offset");
+$stmt->bindValue(':limit', (int)$registros_por_pagina, PDO::PARAM_INT);
+$stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+$stmt->execute();
 $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
@@ -130,14 +143,14 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 
 <body>
-    <nav class="navbar" style="background: rgba(33, 37, 41, 0.85); mb-4;">
+    <nav class="navbar" style="background: rgba(33, 37, 41, 0.85); margin-bottom: 1.5rem;">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="../public/painel.php">
                 <img src="../img/CompreFacil.png" alt="Logo do Sistema Compre Fácil" width="48" height="40" class="me-2" style="object-fit:contain;">
                 <span class="fw-bold text-white">Compre Fácil</span>
             </a>
             <a href="../public/painel.php" class="btn btn-danger mt-4">Voltar ao painel</a>
-        </div>
+    </div>
     </nav>
 
     <div class="container bg-light p-4 rounded shadow-sm mb-5 mt-5">
@@ -250,6 +263,22 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php endforeach; ?>
                 </tbody>
             </table>
+            <!-- Paginação -->
+            <nav>
+                <ul class="pagination justify-content-center mt-4">
+                    <li class="page-item <?= ($pagina_atual <= 1) ? 'disabled' : '' ?>">
+                        <a class="page-link" href="?pagina=<?= $pagina_atual - 1 ?>">Anterior</a>
+                    </li>
+                    <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
+                        <li class="page-item <?= ($i == $pagina_atual) ? 'active' : '' ?>">
+                            <a class="page-link" href="?pagina=<?= $i ?>"><?= $i ?></a>
+                        </li>
+                    <?php endfor; ?>
+                    <li class="page-item <?= ($pagina_atual >= $total_paginas) ? 'disabled' : '' ?>">
+                        <a class="page-link" href="?pagina=<?= $pagina_atual + 1 ?>">Próximo</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
 
