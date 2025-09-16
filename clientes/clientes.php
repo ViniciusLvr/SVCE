@@ -432,8 +432,43 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Endereço</label>
-                                        <input type="text" name="endereco" class="form-control"
-                                            value="<?= htmlspecialchars($cliente['endereco']); ?>">
+                                        <div class="row mb-2">
+                                            <div class="col-md-3">
+                                                <input type="text" name="cep" class="form-control" placeholder="CEP"
+                                                    value="<?= htmlspecialchars($cliente['cep'] ?? '') ?>">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <input type="text" name="logradouro" class="form-control"
+                                                    placeholder="Rua"
+                                                    value="<?= htmlspecialchars($cliente['logradouro'] ?? '') ?>">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <input type="text" name="numero" class="form-control"
+                                                    placeholder="Número"
+                                                    value="<?= htmlspecialchars($cliente['numero'] ?? '') ?>">
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-md-3">
+                                                <input type="text" name="bairro" class="form-control"
+                                                    placeholder="Bairro"
+                                                    value="<?= htmlspecialchars($cliente['bairro'] ?? '') ?>">
+                                            </div>
+                                            <div class="col-md-5">
+                                                <input type="text" name="cidade" class="form-control"
+                                                    placeholder="Cidade"
+                                                    value="<?= htmlspecialchars($cliente['cidade'] ?? '') ?>">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <input type="text" name="estado" class="form-control" placeholder="UF"
+                                                    value="<?= htmlspecialchars($cliente['estado'] ?? '') ?>">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <input type="text" name="complemento" class="form-control"
+                                                    placeholder="Complemento"
+                                                    value="<?= htmlspecialchars($cliente['complemento'] ?? '') ?>">
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
