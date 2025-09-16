@@ -191,8 +191,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['excluir_id'])) {
     }
 }
 
-// Busca clientes
-$stmt = $pdo->query("SELECT * FROM clientes ORDER BY created_at DESC");
+// Busca clientes e seus endereços
+$stmt = $pdo->query("SELECT c.*, e.cep, e.logradouro, e.numero, e.complemento, e.bairro, e.cidade, e.estado FROM clientes c LEFT JOIN enderecos e ON c.id = e.cliente_id ORDER BY c.created_at DESC");
 $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
@@ -322,7 +322,19 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     ?>
                             </td>
                             <td><?= htmlspecialchars($cliente['telefone']) ?></td>
-                            <td><?= htmlspecialchars($cliente['endereco']) ?></td>
+                            <td>
+                                <?php
+                                $enderecoCompleto = [];
+                                if (!empty($cliente['logradouro'])) $enderecoCompleto[] = htmlspecialchars($cliente['logradouro']);
+                                if (!empty($cliente['numero'])) $enderecoCompleto[] = 'Nº ' . htmlspecialchars($cliente['numero']);
+                                if (!empty($cliente['complemento'])) $enderecoCompleto[] = htmlspecialchars($cliente['complemento']);
+                                if (!empty($cliente['bairro'])) $enderecoCompleto[] = htmlspecialchars($cliente['bairro']);
+                                if (!empty($cliente['cidade'])) $enderecoCompleto[] = htmlspecialchars($cliente['cidade']);
+                                if (!empty($cliente['estado'])) $enderecoCompleto[] = htmlspecialchars($cliente['estado']);
+                                if (!empty($cliente['cep'])) $enderecoCompleto[] = 'CEP: ' . htmlspecialchars($cliente['cep']);
+                                echo implode(', ', $enderecoCompleto) ?: 'N/A';
+                                ?>
+                            </td>
                             <td><?= htmlspecialchars($cliente['created_at']) ?></td>
                             <td>
                                 <!-- Botão Excluir -->
