@@ -13,8 +13,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $usuario = $stmt->fetch();
 
     if ($usuario && password_verify($senha, $usuario['senha'])) {
-        $_SESSION['usuario_logado'] = $usuario['nome']; 
-        header('Location: painel.php');
+        $_SESSION['usuario_logado'] = $usuario['nome'];
+        $_SESSION['acesso_permitido'] = true;
+
+        // Redirecionamento com JS para também setar sessionStorage
+        echo "<script>
+            sessionStorage.setItem('acesso_permitido', 'true');
+            window.location.href = 'painel.php';
+        </script>";
         exit();
     } else {
         $erro = "Usuário ou senha inválidos.";
