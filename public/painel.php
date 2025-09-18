@@ -1,6 +1,7 @@
 <?php
-// Inclui o arquivo de autenticação (ajustando caminho relativo)
+// Inclui autenticação e funções de permissão
 require_once '../config/auth.php';
+$cargo = getCargo();
 ?>
 
 <!DOCTYPE html>
@@ -16,19 +17,27 @@ require_once '../config/auth.php';
 
 <body>
 
-    <nav class="navbar mb-4;" style="background: rgba(33, 37, 41, 0.85); ">
+    <nav class="navbar mb-4" style="background: rgba(33, 37, 41, 0.85);">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="#">
-                <img src="../img/CompreFacil.png" alt="Logo do Sistema Compre Fácil" width="48" height="40" class="me-2" style="object-fit:contain;">
+                <img src="../img/CompreFacil.png" alt="Logo do Sistema Compre Fácil" width="48" height="40" class="me-2"
+                    style="object-fit:contain;">
                 <span class="fw-bold text-white">Compre Fácil</span>
             </a>
 
-            <a href="logout.php" class="btn btn-danger">Sair</a>
+            <div class="d-flex align-items-center">
+                <span class="me-3 text-white fw-semibold">
+                    <?php echo ucfirst($cargo); ?>
+                </span>
+                <a href="logout.php" class="btn btn-danger">Sair</a>
+            </div>
         </div>
     </nav>
 
     <div class="container mt-5 bg-light p-4 rounded shadow-sm">
         <div class="row g-3">
+
+            <?php if (in_array($cargo, ['gerente', 'dono'])): ?>
             <div class="col-md-4">
                 <a href="../categoria.php" class="btn btn-primary w-100 py-5">Gerenciar Categorias</a>
             </div>
@@ -38,6 +47,9 @@ require_once '../config/auth.php';
             <div class="col-md-4">
                 <a href="../produto/produto.php" class="btn btn-primary w-100 py-5">Gerenciar Produtos</a>
             </div>
+            <?php endif; ?>
+
+            <?php if (in_array($cargo, ['vendedor','gerente','dono'])): ?>
             <div class="col-md-4">
                 <a href="../clientes/clientes.php" class="btn btn-primary w-100 py-5">Gerenciar Clientes</a>
             </div>
@@ -45,11 +57,25 @@ require_once '../config/auth.php';
                 <a href="../venda/registrarVenda.php" class="btn btn-primary w-100 py-5">Registrar Venda</a>
             </div>
             <div class="col-md-4">
-                <a href="../venda/listarVendas.php" class="btn btn-primary w-100 py-5">Historico de Vendas</a>
+                <a href="../venda/listarVendas.php" class="btn btn-primary w-100 py-5">Histórico de Vendas</a>
             </div>
+            <?php endif; ?>
+
+            <?php if ($cargo === 'dono'): ?>
+            <div class="col-md-4">
+                <a href="usuarios_crud.php" class="btn btn-warning w-100 py-5">Gerenciar Usuários</a>
+            </div>
+            <?php endif; ?>
+
         </div>
     </div>
+
+    <?php if (isset($_GET['erro']) && $_GET['erro'] === 'acesso_negado'): ?>
+    <div class="container mt-3">
+        <div class="alert alert-danger">Você não tem permissão para acessar essa página.</div>
     </div>
+    <?php endif; ?>
+
 </body>
 
 </html>
