@@ -1,5 +1,19 @@
 <?php
-// Inclui autenticação e funções de permissão
+session_start();
+if (!isset($_SESSION['acesso_permitido']) || $_SESSION['acesso_permitido'] !== true) {
+    header("Location: login.php");
+    exit();
+}
+
+// checagem de cargo
+if ($_SESSION['cargo'] === 'dono') {
+    echo "<p>Bem-vindo, Dono {$_SESSION['usuario_logado']}!</p>";
+} elseif ($_SESSION['cargo'] === 'gerente') {
+    echo "<p>Bem-vindo, Gerente {$_SESSION['usuario_logado']}!</p>";
+} else {
+    echo "<p>Bem-vindo, Vendedor {$_SESSION['usuario_logado']}!</p>";
+}
+
 require_once '../config/auth.php';
 $cargo = getCargo();
 ?>
