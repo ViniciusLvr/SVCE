@@ -38,7 +38,7 @@ $vendas = $stmt->fetchAll();
 </head>
 
 <body>
-    <nav class="navbar" style="background: rgba(33, 37, 41, 0.85); mb-4;">
+    <nav class="navbar mb-4" style="background: rgba(33, 37, 41, 0.85); ">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="../public/painel.php">
                 <img src="../img/CompreFacil.png" alt="Logo do Sistema Compre Fácil" width="48" height="40" class="me-2"
