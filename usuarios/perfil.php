@@ -2,9 +2,15 @@
 require_once '../config/auth.php';
 require_once '../config/conexao.php';
 
+// Redireciona para a página de login se o usuário não estiver autenticado
+if (!isset($_SESSION['usuario_id'])) {
+    header('Location: ../public/login.php');
+    exit;
+}
+
 // Dados do usuário logado
-$idLogado = $_SESSION['id'];
-$stmt = $pdo->prepare("SELECT id, username, email, cargo, cpf_cnpj, cor_favorita, created_at FROM usuarios WHERE id = ?");
+$idLogado = $_SESSION['usuario_id'];
+$stmt = $pdo->prepare("SELECT id, nome, email, cargo, CPF, psecreta, created_at FROM usuarios WHERE id = ?");
 $stmt->execute([$idLogado]);
 $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -45,11 +51,11 @@ if ($_SESSION['cargo'] === 'dono') {
 
         <div class="card mb-4">
             <div class="card-body">
-                <p><strong>Nome:</strong> <?= htmlspecialchars($usuario['username']) ?></p>
+                <p><strong>Nome:</strong> <?= htmlspecialchars($usuario['nome']) ?></p>
                 <p><strong>Email:</strong> <?= htmlspecialchars($usuario['email']) ?></p>
                 <p><strong>Cargo:</strong> <?= htmlspecialchars($usuario['cargo']) ?></p>
-                <p><strong>CPF/CNPJ:</strong> <?= htmlspecialchars($usuario['cpf_cnpj']) ?></p>
-                <p><strong>Cor Favorita:</strong> <?= htmlspecialchars($usuario['cor_favorita']) ?></p>
+                <p><strong>CPF:</strong> <?= htmlspecialchars($usuario['CPF']) ?></p>
+                <p><strong>Cor Favorita:</strong> <?= htmlspecialchars($usuario['psecreta']) ?></p>
                 <p><strong>Data de Criação:</strong> <?= htmlspecialchars($usuario['created_at']) ?></p>
             </div>
         </div>
@@ -69,7 +75,7 @@ if ($_SESSION['cargo'] === 'dono') {
                 <?php foreach ($usuarios as $user): ?>
                 <tr>
                     <td><?= htmlspecialchars($user['id']) ?></td>
-                    <td><?= htmlspecialchars($user['username']) ?></td>
+                    <td><?= htmlspecialchars($user['nome']) ?></td>
                     <td><?= htmlspecialchars($user['email']) ?></td>
                     <td><?= htmlspecialchars($user['cargo']) ?></td>
                 </tr>
