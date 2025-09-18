@@ -18,7 +18,7 @@ require "../config/conexao.php";
 </head>
 
 <body>
-    <nav class="navbar" style="background: rgba(33, 37, 41, 0.85); mb-4;">
+    <nav class="navbar mb-4" style="background: rgba(33, 37, 41, 0.85); ">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="../public/painel.php">
                 <img src="../img/CompreFacil.png" alt="Logo do Sistema Compre Fácil" width="48" height="40" class="me-2"
@@ -94,137 +94,102 @@ require "../config/conexao.php";
         </form>
     </div>
 
-    <script>
-
-        function atualizarPrecoItem(itemDiv) {
-            const select = itemDiv.querySelector('select[name="produto_id[]"]');
-            const precoInput = itemDiv.querySelector('input[name="preco_unitario[]"]');
-            const produtoId = select.value;
-            if (produtoId) {
-                fetch(`get_preco_produto.php?id=${produtoId}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.preco !== undefined) {
-                            precoInput.value = parseFloat(data.preco).toFixed(2);
-                        } else {
-                            precoInput.value = "0.00";
-                        }
-                        calcularTotal();
-                    })
-                    .catch(err => {
+<script>
+    function atualizarPrecoItem(itemDiv) {
+        const select = itemDiv.querySelector('select[name="produto_id[]"]');
+        const precoInput = itemDiv.querySelector('input[name="preco_unitario[]"]');
+        const produtoId = select.value;
+        
+        if (produtoId) {
+            fetch(`../produto/get_preco_produto.php?id=${produtoId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.preco !== undefined) {
+                        precoInput.value = parseFloat(data.preco).toFixed(2);
+                    } else {
                         precoInput.value = "0.00";
-                        calcularTotal();
-                    });
-            } else {
-                precoInput.value = "0.00";
-                calcularTotal();
-            }
+                    }
+                    calcularTotal(); // Calcular o total após atualizar o preço
+                })
+                .catch(err => {
+                    precoInput.value = "0.00";
+                    calcularTotal(); // Calcular o total após erro
+                });
+        } else {
+            precoInput.value = "0.00";
+            calcularTotal(); // Calcular total se não houver produto selecionado
         }
+    }
 
-        function atualizarPrecosTodosItens() {
-            document.querySelectorAll('.item-venda').forEach(atualizarPrecoItem);
-        }
+    function atualizarPrecosTodosItens() {
+        document.querySelectorAll('.item-venda').forEach(atualizarPrecoItem);
+    }
 
-        document.addEventListener('DOMContentLoaded', atualizarPrecosTodosItens);
-
-        document.addEventListener('change', function(e) {
+    // Unificando os listeners para os eventos de mudança
+    document.addEventListener('change', function(e) {
+        if (e.target.matches('select[name="produto_id[]"]') || e.target.matches('input[name="quantidade[]"]')) {
+            const itemDiv = e.target.closest('.item-venda');
             if (e.target.matches('select[name="produto_id[]"]')) {
-                const itemDiv = e.target.closest('.item-venda');
                 atualizarPrecoItem(itemDiv);
             }
+            calcularTotal(); // Atualizar total após a mudança na quantidade ou no produto
+        }
+    });
+
+    function adicionarItem() {
+        const container = document.getElementById('itens-container');
+        const item = container.querySelector('.item-venda');
+        const novoItem = item.cloneNode(true);
+
+        novoItem.querySelectorAll('input').forEach(input => {
+            if (input.name.includes('quantidade')) input.value = '1'; // Resetar quantidade
+            else input.value = '0'; // Resetar preço
         });
 
-        function adicionarItem() {
-            const container = document.getElementById('itens-container');
-            const item = container.querySelector('.item-venda');
-            const novoItem = item.cloneNode(true);
-            novoItem.querySelectorAll('input').forEach(input => {
-                if (input.name.includes('quantidade')) input.value = '1';
-                else input.value = '0';
-            });
-            novoItem.querySelector('select').selectedIndex = 0;
-            container.appendChild(novoItem);
-            atualizarPrecoItem(novoItem);
-            calcularTotal();
+        novoItem.querySelector('select').selectedIndex = 0; // Resetar seleção de produto
+        container.appendChild(novoItem);
+
+        atualizarPrecoItem(novoItem); // Atualiza o preço do novo item
+        calcularTotal(); // Atualiza o total após adicionar o item
+    }
+
+    function removerItem(botao) {
+        const container = document.getElementById('itens-container');
+        if (container.children.length > 1) {
+            botao.closest('.item-venda').remove();
+            calcularTotal(); // Atualiza o total após remover o item
+        } else {
+            alert('Deve haver pelo menos um item na venda.');
+        }
+    }
+
+    function calcularTotal() {
+        let total = 0;
+        const quantidades = document.querySelectorAll('.quantidade');
+        const precos = document.querySelectorAll('.preco');
+        
+        for (let i = 0; i < quantidades.length; i++) {
+            const qtd = parseFloat(quantidades[i].value) || 0;
+            const preco = parseFloat(precos[i].value) || 0;
+            total += qtd * preco;
         }
 
-        function removerItem(botao) {
-            const container = document.getElementById('itens-container');
-            if (container.children.length > 1) {
-                botao.closest('.item-venda').remove();
-                calcularTotal();
-            } else {
-                alert('Deve haver pelo menos um item na venda.');
+        document.getElementById('total-venda').innerText = 'Total: R$ ' + total.toFixed(2).replace('.', ',');
+    }
+
+    // Inicializando a atualização dos preços dos produtos ao carregar a página
+    document.addEventListener('DOMContentLoaded', function() {
+        // Seleciona o primeiro produto se não houver seleção
+        document.querySelectorAll('select[name="produto_id[]"]').forEach(function(select){
+            if (!select.value) {
+                select.selectedIndex = 0;
             }
-        }
-
-        function calcularTotal() {
-            let total = 0;
-            const quantidades = document.querySelectorAll('.quantidade');
-            const precos = document.querySelectorAll('.preco');
-            for (let i = 0; i < quantidades.length; i++) {
-                const qtd = parseFloat(quantidades[i].value) || 0;
-                const preco = parseFloat(precos[i].value) || 0;
-                total += qtd * preco;
-            }
-            document.getElementById('total-venda').innerText = 'Total: R$ ' + total.toFixed(2).replace('.', ',');
-        }
-
+        });
+        atualizarPrecosTodosItens();
         calcularTotal();
-    </script>
+    });
+</script>
 
-    <script>
-        // Atualiza preço ao mudar produto
-        document.addEventListener('change', function(e) {
-            if (e.target.matches('select[name="produto_id[]"]')) {
-                const select = e.target;
-                const itemDiv = select.closest('.item-venda');
-                const precoInput = itemDiv.querySelector('input[name="preco_unitario[]"]');
-                const produtoId = select.value;
-
-                if (produtoId) {
-                    fetch(`get_preco_produto.php?id=${produtoId}`)
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.preco !== undefined) {
-                                precoInput.value = parseFloat(data.preco).toFixed(2);
-                                calcularTotal();
-                            } else {
-                                precoInput.value = "0.00";
-                            }
-                        })
-                        .catch(err => {
-                            precoInput.value = "0.00";
-                            console.error("Erro ao buscar preço:", err);
-                        });
-                }
-            }
-        });
-
-        function atualizarPrecosIniciais() {
-            document.querySelectorAll('.item-venda').forEach(function(itemDiv) {
-                const select = itemDiv.querySelector('select[name="produto_id[]"]');
-                const precoInput = itemDiv.querySelector('input[name="preco_unitario[]"]');
-                const produtoId = select.value;
-                if (produtoId) {
-                    fetch(`get_preco_produto.php?id=${produtoId}`)
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.preco !== undefined) {
-                                precoInput.value = parseFloat(data.preco).toFixed(2);
-                                calcularTotal();
-                            } else {
-                                precoInput.value = "0.00";
-                            }
-                        })
-                        .catch(err => {
-                            precoInput.value = "0.00";
-                        });
-                }
-            });
-        }
-        document.addEventListener('DOMContentLoaded', atualizarPrecosIniciais);
-    </script>
 </body>
 
 </html>
