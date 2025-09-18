@@ -1,7 +1,9 @@
 <?php
 // Caminho: config/auth.php
 
-session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 
 if (!isset($_SESSION['usuario_logado'])) {
     header("Location: ../public/login.php");
@@ -9,7 +11,7 @@ if (!isset($_SESSION['usuario_logado'])) {
 }
 
 function getCargo() {
-    return $_SESSION['usuario']['cargo'] ?? 'vendedor';
+    return $_SESSION['cargo'] ?? 'vendedor';
 }
 
 //verifica se o usuário tem permissão para acessar a página

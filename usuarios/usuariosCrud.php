@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Buscar usuários
-$stmt = $pdo->query("SELECT id, username, email, cargo FROM usuarios ORDER BY id ASC");
+$stmt = $pdo->query("SELECT id, nome, email, cargo FROM usuarios ORDER BY id ASC");
 $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
@@ -52,7 +52,7 @@ $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     style="object-fit:contain;">
                 <span class="fw-bold text-white">Compre Fácil</span>
             </a>
-            <a href="../public/painel.php" class="btn btn-secondary">Voltar</a>
+            <a href="../public/painel.php" class="btn btn-danger">Voltar ao Painel</a>
         </div>
     </nav>
 
@@ -73,7 +73,7 @@ $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php foreach ($usuarios as $user): ?>
                 <tr>
                     <td><?= htmlspecialchars($user['id']) ?></td>
-                    <td><?= htmlspecialchars($user['username']) ?></td>
+                    <td><?= htmlspecialchars($user['nome']) ?></td>
                     <td><?= htmlspecialchars($user['email']) ?></td>
                     <td>
                         <form method="POST" class="d-flex">

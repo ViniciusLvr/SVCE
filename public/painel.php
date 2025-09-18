@@ -5,15 +5,6 @@ if (!isset($_SESSION['acesso_permitido']) || $_SESSION['acesso_permitido'] !== t
     exit();
 }
 
-// checagem de cargo
-if ($_SESSION['cargo'] === 'dono') {
-    echo "<p>Bem-vindo, Dono {$_SESSION['usuario_logado']}!</p>";
-} elseif ($_SESSION['cargo'] === 'gerente') {
-    echo "<p>Bem-vindo, Gerente {$_SESSION['usuario_logado']}!</p>";
-} else {
-    echo "<p>Bem-vindo, Vendedor {$_SESSION['usuario_logado']}!</p>";
-}
-
 require_once '../config/auth.php';
 $cargo = getCargo();
 ?>
@@ -41,7 +32,6 @@ $cargo = getCargo();
 
             <div class="d-flex gap-2">
                 <a href="../usuarios/perfil.php" class="btn btn-info text-white">Meu Perfil</a>
-                <a href="logout.php" class="btn btn-danger">Sair</a>
             </div>
 
             <div class="d-flex align-items-center">

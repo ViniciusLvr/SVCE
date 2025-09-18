@@ -17,7 +17,7 @@ $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 // Se for dono, puxa todos usuários
 $usuarios = [];
 if ($_SESSION['cargo'] === 'dono') {
-    $stmtAll = $pdo->query("SELECT id, username, email, cargo FROM usuarios ORDER BY id ASC");
+    $stmtAll = $pdo->query("SELECT id, nome, email, cargo FROM usuarios ORDER BY id ASC");
     $usuarios = $stmtAll->fetchAll(PDO::FETCH_ASSOC);
 }
 ?>
@@ -42,7 +42,7 @@ if ($_SESSION['cargo'] === 'dono') {
                     style="object-fit:contain;">
                 <span class="fw-bold text-white">Compre Fácil</span>
             </a>
-            <a href="../public/painel.php" class="btn btn-secondary">Voltar</a>
+            <a href="../public/painel.php" class="btn btn-danger">Voltar ao Painel</a>
         </div>
     </nav>
 
