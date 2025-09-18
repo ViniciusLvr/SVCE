@@ -25,6 +25,11 @@ $cargo = getCargo();
                 <span class="fw-bold text-white">Compre Fácil</span>
             </a>
 
+            <div class="d-flex gap-2">
+                <a href="../usuarios/perfil.php" class="btn btn-info text-white">Meu Perfil</a>
+                <a href="logout.php" class="btn btn-danger">Sair</a>
+            </div>
+
             <div class="d-flex align-items-center">
                 <span class="me-3 text-white fw-semibold">
                     <?php echo ucfirst($cargo); ?>
