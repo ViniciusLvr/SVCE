@@ -63,7 +63,7 @@ $cargo = getCargo();
 
             <?php if ($cargo === 'dono'): ?>
             <div class="col-md-4">
-                <a href="usuarios_crud.php" class="btn btn-warning w-100 py-5">Gerenciar Usuários</a>
+                <a href="../usuarios/usuariosCrud.php" class="btn btn-warning w-100 py-5">Gerenciar Usuários</a>
             </div>
             <?php endif; ?>
 
