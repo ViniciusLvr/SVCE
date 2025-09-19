@@ -106,7 +106,7 @@ function deletarProduto($id)
         if ($e->getCode() == '23000' && strpos($e->getMessage(), 'a foreign key constraint fails') !== false) {
             echo "<div class='alert alert-danger'>Não é possível excluir o produto pois ele está relacionado a outros registros (ex: vendas).</div>";
         } else {
-            echo "<div class='alert alert-danger'>Erro ao excluir produto: ".$e->getMessage()."</div>";
+            echo "<div class='alert alert-danger'>Erro ao excluir produto: " . $e->getMessage() . "</div>";
         }
         return false;
     }
@@ -224,7 +224,7 @@ $estoqueCritico = produtosEstoqueCritico(5); // 5 é o limite mínimo do estoque
                 <img src="../img/CompreFacil.png" alt="Logo do Sistema Compre Fácil" width="48" height="40" class="me-2" style="object-fit:contain;">
                 <span class="fw-bold text-white">Compre Fácil</span>
             </a>
-            <a href="../public/painel.php" class="btn btn-danger mt-4">Voltar ao painel</a>
+            <a href="../public/painel.php" class="btn btn-danger">Voltar ao painel</a>
         </div>
     </nav>
 
@@ -382,7 +382,7 @@ $estoqueCritico = produtosEstoqueCritico(5); // 5 é o limite mínimo do estoque
                                     </div>
                                     <div class="mb-3">
                                         <label>Preço</label>
-                                        <input type="number" step="0.01" name="preco" class="form-control" value="<?= $p['preco'] ?>" required>
+                                        <input type="text" name="preco" class="form-control preco" value="<?= $p['preco'] ?>" required>
                                     </div>
                                     <div class="mb-3">
                                         <label>Estoque</label>

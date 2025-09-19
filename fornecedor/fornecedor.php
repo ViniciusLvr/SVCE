@@ -31,7 +31,7 @@ function excluirFornecedor($pdo, $id)
         if ($e->getCode() == '23000' && strpos($e->getMessage(), 'a foreign key constraint fails') !== false) {
             echo "<div class='alert alert-danger'>Não é possível excluir o fornecedor pois ele está relacionado a outros registros (ex: produtos).</div>";
         } else {
-            echo "<div class='alert alert-danger'>Erro ao excluir fornecedor: ".$e->getMessage()."</div>";
+            echo "<div class='alert alert-danger'>Erro ao excluir fornecedor: " . $e->getMessage() . "</div>";
         }
         return false;
     }
@@ -149,8 +149,8 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <img src="../img/CompreFacil.png" alt="Logo do Sistema Compre Fácil" width="48" height="40" class="me-2" style="object-fit:contain;">
                 <span class="fw-bold text-white">Compre Fácil</span>
             </a>
-            <a href="../public/painel.php" class="btn btn-danger mt-4">Voltar ao painel</a>
-    </div>
+            <a href="../public/painel.php" class="btn btn-danger">Voltar ao painel</a>
+        </div>
     </nav>
 
     <div class="container bg-light p-4 rounded shadow-sm mb-5 mt-5">
@@ -232,9 +232,21 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                 <input type="text" name="nome" class="form-control" value="<?= htmlspecialchars($f['nome']) ?>" required>
                                             </div>
                                             <?php
-                                            $tipoDocumento = strlen($f['cpf']) === 11 ? 'CPF' : 'CNPJ';
-                                            $documento = $f['cpf'] ?: $f['cnpj'];
+                                            $cpf = $f['cpf'] ?? '';
+                                            $cnpj = $f['cnpj'] ?? '';
+
+                                            if (!empty($cpf) && strlen($cpf) === 11) {
+                                                $tipoDocumento = 'CPF';
+                                                $documento = $cpf;
+                                            } elseif (!empty($cnpj)) {
+                                                $tipoDocumento = 'CNPJ';
+                                                $documento = $cnpj;
+                                            } else {
+                                                $tipoDocumento = 'Não informado';
+                                                $documento = '';
+                                            }
                                             ?>
+
                                             <label class="form-label">CPF/CNPJ</label>
                                             <div class="row g-2 align-items-center mb-3">
                                                 <div class="col-auto">
@@ -249,7 +261,7 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label">Telefone</label>
-                                                <input type="text" name="telefone" class="form-control" value="<?= htmlspecialchars($f['telefone']) ?>" required>
+                                                <input type="text" name="telefone" class="form-control telefone" value="<?= htmlspecialchars($f['telefone']) ?>" required>
                                             </div>
                                         </div>
                                         <div class="modal-footer">

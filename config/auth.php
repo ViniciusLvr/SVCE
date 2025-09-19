@@ -10,17 +10,18 @@ if (!isset($_SESSION['usuario_logado'])) {
     exit();
 }
 
-function getCargo() {
+function getCargo()
+{
     return $_SESSION['cargo'] ?? 'vendedor';
 }
 
 //verifica se o usuário tem permissão para acessar a página
 
-function verificarPermissao($cargosPermitidos) {
+function verificarPermissao($cargosPermitidos)
+{
     $cargo = getCargo();
     if (!in_array($cargo, $cargosPermitidos)) {
         header("Location: ../public/painel.php?erro=acesso_negado");
         exit();
     }
 }
-?>

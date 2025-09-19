@@ -19,7 +19,7 @@ function excluirCategoria($pdo, $id)
         if ($e->getCode() == '23000' && strpos($e->getMessage(), 'a foreign key constraint fails') !== false) {
             echo "<div class='alert alert-danger'>Não é possível excluir a categoria pois ela está relacionada a outros registros (ex: produtos).</div>";
         } else {
-            echo "<div class='alert alert-danger'>Erro ao excluir categoria: ".$e->getMessage()."</div>";
+            echo "<div class='alert alert-danger'>Erro ao excluir categoria: " . $e->getMessage() . "</div>";
         }
         return false;
     }
@@ -116,7 +116,8 @@ $categorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <span class="fw-bold text-white">Compre Fácil</span>
             </a>
 
-            <a href="public/painel.php" class="btn btn-danger mt-4">Voltar ao painel</a>
+            <a href="public/painel.php" class="btn btn-danger">Voltar ao painel</a>
+
         </div>
     </nav>
 
@@ -145,25 +146,25 @@ $categorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </thead>
                     <tbody>
                         <?php foreach ($categorias as $categoria): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($categoria['id']) ?></td>
-                            <td><?= htmlspecialchars($categoria['nome']) ?></td>
-                            <td><?= htmlspecialchars($categoria['created_at']) ?></td>
-                            <td>
-                                <form method="post" class="d-inline"
-                                    onsubmit="return confirm('Tem certeza que deseja excluir esta categoria?');">
-                                    <input type="hidden" name="excluir_id"
-                                        value="<?= htmlspecialchars($categoria['id']) ?>">
-                                    <button type="submit" class="btn btn-sm btn-danger"><i
-                                            class="bi bi-trash3"></i>Excluir</button>
-                                </form>
-                                <!-- Botão para abrir o modal de edição -->
-                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                    data-bs-target="#editarCategoria<?= $categoria['id'] ?>">
-                                    Editar
-                                </button>
-                            </td>
-                        </tr>
+                            <tr>
+                                <td><?= htmlspecialchars($categoria['id']) ?></td>
+                                <td><?= htmlspecialchars($categoria['nome']) ?></td>
+                                <td><?= htmlspecialchars($categoria['created_at']) ?></td>
+                                <td>
+                                    <form method="post" class="d-inline"
+                                        onsubmit="return confirm('Tem certeza que deseja excluir esta categoria?');">
+                                        <input type="hidden" name="excluir_id"
+                                            value="<?= htmlspecialchars($categoria['id']) ?>">
+                                        <button type="submit" class="btn btn-sm btn-danger"><i
+                                                class="bi bi-trash3"></i>Excluir</button>
+                                    </form>
+                                    <!-- Botão para abrir o modal de edição -->
+                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#editarCategoria<?= $categoria['id'] ?>">
+                                        Editar
+                                    </button>
+                                </td>
+                            </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -174,9 +175,9 @@ $categorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <a class="page-link" href="?pagina=<?= $pagina_atual - 1 ?>">Anterior</a>
                         </li>
                         <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
-                        <li class="page-item <?= ($i == $pagina_atual) ? 'active' : '' ?>">
-                            <a class="page-link" href="?pagina=<?= $i ?>"><?= $i ?></a>
-                        </li>
+                            <li class="page-item <?= ($i == $pagina_atual) ? 'active' : '' ?>">
+                                <a class="page-link" href="?pagina=<?= $i ?>"><?= $i ?></a>
+                            </li>
                         <?php endfor; ?>
                         <li class="page-item <?= ($pagina_atual >= $total_paginas) ? 'disabled' : '' ?>">
                             <a class="page-link" href="?pagina=<?= $pagina_atual + 1 ?>">Próximo</a>
@@ -187,31 +188,31 @@ $categorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             <!-- Modais de edição -->
             <?php foreach ($categorias as $categoria): ?>
-            <div class="modal fade" id="editarCategoria<?= $categoria['id'] ?>" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <form method="post">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Editar Categoria</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
-                            <div class="modal-body">
-                                <input type="hidden" name="editar_id" value="<?= $categoria['id'] ?>">
-                                <div class="mb-3">
-                                    <label class="form-label">Nome da Categoria</label>
-                                    <input type="text" name="novo_nome" class="form-control"
-                                        value="<?= htmlspecialchars($categoria['nome']) ?>" required>
+                <div class="modal fade" id="editarCategoria<?= $categoria['id'] ?>" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form method="post">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Editar Categoria</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                 </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-                                <button type="button" class="btn btn-secondary"
-                                    data-bs-dismiss="modal">Cancelar</button>
-                            </div>
-                        </form>
+                                <div class="modal-body">
+                                    <input type="hidden" name="editar_id" value="<?= $categoria['id'] ?>">
+                                    <div class="mb-3">
+                                        <label class="form-label">Nome da Categoria</label>
+                                        <input type="text" name="novo_nome" class="form-control"
+                                            value="<?= htmlspecialchars($categoria['nome']) ?>" required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cancelar</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
             <?php endforeach; ?>
 
 
