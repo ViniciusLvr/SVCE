@@ -150,7 +150,7 @@ $categorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <td><?= htmlspecialchars($categoria['id']) ?></td>
                                 <td><?= htmlspecialchars($categoria['nome']) ?></td>
                                 <td><?= htmlspecialchars($categoria['created_at']) ?></td>
-                                <td>
+                                <td><div class="d-flex gap-2">
                                     <form method="post" class="d-inline"
                                         onsubmit="return confirm('Tem certeza que deseja excluir esta categoria?');">
                                         <input type="hidden" name="excluir_id"
@@ -162,7 +162,7 @@ $categorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
                                         data-bs-target="#editarCategoria<?= $categoria['id'] ?>">
                                         Editar
-                                    </button>
+                                    </button></div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

@@ -70,32 +70,52 @@ function excluirCliente($pdo, $id)
     }
 }
 
-function atualizarCliente($pdo, $id, $nome, $telefone, $endereco, $cpf, $cnpj, $tipoDocumento)
+function atualizarCliente($pdo, $id, $nome, $telefone, $cpf, $cnpj, $tipoDocumento, $enderecoData)
 {
-    if ($tipoDocumento == 'CPF') {
-        $sql = "UPDATE clientes 
-                SET nome = :nome, telefone = :telefone, endereco = :endereco, cpf = :cpf
-                WHERE id = :id";
+    try {
+        $pdo->beginTransaction();
+
+        // Atualiza cliente
+        if ($tipoDocumento == 'CPF') {
+            $sql = "UPDATE clientes SET nome = :nome, telefone = :telefone, cpf = :cpf WHERE id = :id";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ':id' => $id,
+                ':nome' => $nome,
+                ':telefone' => $telefone,
+                ':cpf' => $cpf,
+            ]);
+        } else {
+            $sql = "UPDATE clientes SET nome = :nome, telefone = :telefone, cnpj = :cnpj WHERE id = :id";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ':id' => $id,
+                ':nome' => $nome,
+                ':telefone' => $telefone,
+                ':cnpj' => $cnpj,
+            ]);
+        }
+
+        // Atualiza endereço
+        $sql = "UPDATE enderecos SET cep = :cep, logradouro = :logradouro, numero = :numero, complemento = :complemento, bairro = :bairro, cidade = :cidade, estado = :estado WHERE cliente_id = :cliente_id";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
-            ':id' => $id,
-            ':nome' => $nome,
-            ':telefone' => $telefone,
-            ':endereco' => $endereco,
-            ':cpf' => $cpf,
+            ':cliente_id' => $id,
+            ':cep' => preg_replace('/\D/', '', $enderecoData['cep']),
+            ':logradouro' => $enderecoData['logradouro'],
+            ':numero' => $enderecoData['numero'],
+            ':complemento' => $enderecoData['complemento'],
+            ':bairro' => $enderecoData['bairro'],
+            ':cidade' => $enderecoData['cidade'],
+            ':estado' => $enderecoData['estado']
         ]);
-    } elseif ($tipoDocumento == 'CNPJ') {
-        $sql = "UPDATE clientes 
-                SET nome = :nome, telefone = :telefone, endereco = :endereco, cnpj = :cnpj
-                WHERE id = :id";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            ':id' => $id,
-            ':nome' => $nome,
-            ':telefone' => $telefone,
-            ':endereco' => $endereco,
-            ':cnpj' => $cnpj,
-        ]);
+
+        $pdo->commit();
+        return true;
+    } catch (PDOException $e) {
+        $pdo->rollBack();
+        echo "<div class='alert alert-danger'>Erro ao atualizar cliente: " . $e->getMessage() . "</div>";
+        return false;
     }
 }
 
@@ -152,26 +172,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_id']) && !isset
         exit();
     }
 
-    // Se novos dados foram enviados, usa eles; senão, usa os antigos
+    // Busca endereço atual
+    $stmt = $pdo->prepare("SELECT * FROM enderecos WHERE cliente_id = :cliente_id");
+    $stmt->execute([':cliente_id' => $id]);
+    $enderecoExistente = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Dados do formulário
     $nome = trim($_POST['nome'] ?? '') ?: $clienteExistente['nome'];
     $telefone = trim($_POST['telefone'] ?? '') ?: $clienteExistente['telefone'];
-    $endereco = trim($_POST['enderecos'] ?? '') ?: $clienteExistente['enderecos'];
-    $cpf_cnpj = trim($_POST['cpf_cnpj'] ?? '');
+    $tipoDocumento = $_POST['tipoDocumento'] ?? (!empty($clienteExistente['cpf']) ? 'CPF' : 'CNPJ');
+    $cpf = preg_replace('/\D/', '', $_POST['cpf'] ?? '') ?: $clienteExistente['cpf'];
+    $cnpj = preg_replace('/\D/', '', $_POST['cnpj'] ?? '') ?: $clienteExistente['cnpj'];
 
-    // Descobre se é CPF ou CNPJ com base no que já está salvo
-    $tipoDocumento = !empty($clienteExistente['cpf']) ? 'CPF' : 'CNPJ';
+    $enderecoData = [
+        'cep' => $_POST['cep'] ?? $enderecoExistente['cep'],
+        'logradouro' => $_POST['logradouro'] ?? $enderecoExistente['logradouro'],
+        'numero' => $_POST['numero'] ?? $enderecoExistente['numero'],
+        'complemento' => $_POST['complemento'] ?? $enderecoExistente['complemento'],
+        'bairro' => $_POST['bairro'] ?? $enderecoExistente['bairro'],
+        'cidade' => $_POST['cidade'] ?? $enderecoExistente['cidade'],
+        'estado' => $_POST['estado'] ?? $enderecoExistente['estado']
+    ];
 
-    if ($tipoDocumento === 'CPF') {
-        $cpf = $cpf_cnpj ?: $clienteExistente['cpf'];
-        $cnpj = '';
-    } else {
-        $cnpj = $cpf_cnpj ?: $clienteExistente['cnpj'];
-        $cpf = '';
+    if (atualizarCliente($pdo, $id, $nome, $telefone, $cpf, $cnpj, $tipoDocumento, $enderecoData)) {
+        header("Location: clientes.php");
+        exit();
     }
-
-    atualizarCliente($pdo, $id, $nome, $telefone, $endereco, $cpf, $cnpj, $tipoDocumento);
-    header("Location: clientes.php");
-    exit();
 }
 
 
@@ -320,11 +346,11 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </thead>
                     <tbody>
                         <?php foreach ($clientes as $cliente): ?>
-                            <tr>
-                                <td><?= htmlspecialchars($cliente['id']) ?></td>
-                                <td><?= htmlspecialchars($cliente['nome']) ?></td>
-                                <td>
-                                    <?php
+                        <tr>
+                            <td><?= htmlspecialchars($cliente['id']) ?></td>
+                            <td><?= htmlspecialchars($cliente['nome']) ?></td>
+                            <td>
+                                <?php
                                     if (!empty($cliente['cpf'])) {
                                         echo "CPF: " . htmlspecialchars($cliente['cpf']);
                                     } elseif (!empty($cliente['cnpj'])) {
@@ -333,10 +359,10 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         echo "N/A";
                                     }
                                     ?>
-                                </td>
-                                <td><?= htmlspecialchars($cliente['telefone']) ?></td>
-                                <td>
-                                    <?php
+                            </td>
+                            <td><?= htmlspecialchars($cliente['telefone']) ?></td>
+                            <td>
+                                <?php
                                     $enderecoCompleto = [];
                                     if (!empty($cliente['logradouro'])) $enderecoCompleto[] = htmlspecialchars($cliente['logradouro']);
                                     if (!empty($cliente['numero'])) $enderecoCompleto[] = 'Nº ' . htmlspecialchars($cliente['numero']);
@@ -347,24 +373,25 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     if (!empty($cliente['cep'])) $enderecoCompleto[] = 'CEP: ' . htmlspecialchars($cliente['cep']);
                                     echo implode(', ', $enderecoCompleto) ?: 'N/A';
                                     ?>
-                                </td>
-                                <td><?= htmlspecialchars($cliente['created_at']) ?></td>
-                                <td>
-                                    <div class="d-flex gap-2">
-                                        <form method="post"
-                                            onsubmit="return confirm('Tem certeza que deseja excluir este cliente?');">
-                                            <input type="hidden" name="excluir_id" value="<?= htmlspecialchars($cliente['id']) ?>">
-                                            <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
-                                        </form>
+                            </td>
+                            <td><?= htmlspecialchars($cliente['created_at']) ?></td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <form method="post"
+                                        onsubmit="return confirm('Tem certeza que deseja excluir este cliente?');">
+                                        <input type="hidden" name="excluir_id"
+                                            value="<?= htmlspecialchars($cliente['id']) ?>">
+                                        <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                                    </form>
 
-                                        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                            data-bs-target="#editarCliente<?= $cliente['id'] ?>">
-                                            Editar
-                                        </button>
-                                    </div>
-                                </td>
+                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#editarCliente<?= $cliente['id'] ?>">
+                                        Editar
+                                    </button>
+                                </div>
+                            </td>
 
-                            </tr>
+                        </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -375,9 +402,9 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <a class="page-link" href="?pagina=<?= $pagina_atual - 1 ?>">Anterior</a>
                         </li>
                         <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
-                            <li class="page-item <?= ($i == $pagina_atual) ? 'active' : '' ?>">
-                                <a class="page-link" href="?pagina=<?= $i ?>"><?= $i ?></a>
-                            </li>
+                        <li class="page-item <?= ($i == $pagina_atual) ? 'active' : '' ?>">
+                            <a class="page-link" href="?pagina=<?= $i ?>"><?= $i ?></a>
+                        </li>
                         <?php endfor; ?>
                         <li class="page-item <?= ($pagina_atual >= $total_paginas) ? 'disabled' : '' ?>">
                             <a class="page-link" href="?pagina=<?= $pagina_atual + 1 ?>">Próximo</a>
@@ -387,99 +414,100 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                 <!-- Modais de edição -->
                 <?php foreach ($clientes as $cliente): ?>
-                    <div class="modal fade" id="editarCliente<?= $cliente['id'] ?>" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <form method="post">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Editar Cliente</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <div class="modal fade" id="editarCliente<?= $cliente['id'] ?>" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form method="post">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Editar Cliente</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <input type="hidden" name="editar_id" value="<?= $cliente['id'] ?>">
+                                    <div class="mb-3">
+                                        <label class="form-label">Nome</label>
+                                        <input type="text" name="nome" class="form-control" pattern="[A-Za-zÀ-ÿ\s]+"
+                                            value="<?= htmlspecialchars($cliente['nome']) ?>">
                                     </div>
-                                    <div class="modal-body">
-                                        <input type="hidden" name="editar_id" value="<?= $cliente['id'] ?>">
-                                        <div class="mb-3">
-                                            <label class="form-label">Nome</label>
-                                            <input type="text" name="nome" class="form-control" pattern="[A-Za-zÀ-ÿ\s]+"
-                                                value="<?= htmlspecialchars($cliente['nome']) ?>">
-                                        </div>
-                                        <?php
+                                    <?php
                                         $tipoDoc = !empty($cliente['cpf']) ? 'CPF' : 'CNPJ';
                                         $cpf = $cliente['cpf'] ?? '';
                                         $cnpj = $cliente['cnpj'] ?? '';
                                         ?>
-                                        <div class="mb-3">
-                                            <label class="form-label">Tipo de Documento</label>
-                                            <select class="form-select mb-2 tipoDocumentoEditar" name="tipoDocumento">
-                                                <option value="CPF" <?= $tipoDoc === 'CPF' ? 'selected' : '' ?>>CPF</option>
-                                                <option value="CNPJ" <?= $tipoDoc === 'CNPJ' ? 'selected' : '' ?>>CNPJ
-                                                </option>
-                                            </select>
-                                            <div id="campoCPFEditar<?= $cliente['id'] ?>" class="mb-2"
-                                                style="display:<?= $tipoDoc === 'CPF' ? 'block' : 'none' ?>;">
-                                                <input type="text" name="cpf" class="form-control cpfEditar"
-                                                    placeholder="CPF" value="<?= htmlspecialchars($cpf) ?>">
+                                    <div class="mb-3">
+                                        <label class="form-label">Tipo de Documento</label>
+                                        <select class="form-select mb-2 tipoDocumentoEditar" name="tipoDocumento">
+                                            <option value="CPF" <?= $tipoDoc === 'CPF' ? 'selected' : '' ?>>CPF</option>
+                                            <option value="CNPJ" <?= $tipoDoc === 'CNPJ' ? 'selected' : '' ?>>CNPJ
+                                            </option>
+                                        </select>
+                                        <div id="campoCPFEditar<?= $cliente['id'] ?>" class="mb-2"
+                                            style="display:<?= $tipoDoc === 'CPF' ? 'block' : 'none' ?>;">
+                                            <input type="text" name="cpf" class="form-control cpfEditar"
+                                                placeholder="CPF" value="<?= htmlspecialchars($cpf) ?>">
+                                        </div>
+                                        <div id="campoCNPJEditar<?= $cliente['id'] ?>" class="mb-2"
+                                            style="display:<?= $tipoDoc === 'CNPJ' ? 'block' : 'none' ?>;">
+                                            <input type="text" name="cnpj" class="form-control cnpjEditar"
+                                                placeholder="CNPJ" value="<?= htmlspecialchars($cnpj) ?>">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Telefone</label>
+                                        <input type="text" name="telefone" class="form-control telefone"
+                                            value="<?= htmlspecialchars($cliente['telefone']) ?>">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Endereço</label>
+                                        <div class="row mb-2">
+                                            <div class="col-md-3">
+                                                <input type="text" id="cep" name="cep" class="form-control"
+                                                    placeholder="CEP"
+                                                    value="<?= htmlspecialchars($cliente['cep'] ?? '') ?>">
                                             </div>
-                                            <div id="campoCNPJEditar<?= $cliente['id'] ?>" class="mb-2"
-                                                style="display:<?= $tipoDoc === 'CNPJ' ? 'block' : 'none' ?>;">
-                                                <input type="text" name="cnpj" class="form-control cnpjEditar"
-                                                    placeholder="CNPJ" value="<?= htmlspecialchars($cnpj) ?>">
+                                            <div class="col-md-6">
+                                                <input type="text" name="logradouro" class="form-control"
+                                                    placeholder="Rua"
+                                                    value="<?= htmlspecialchars($cliente['logradouro'] ?? '') ?>">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <input type="text" name="numero" class="form-control"
+                                                    placeholder="Número"
+                                                    value="<?= htmlspecialchars($cliente['numero'] ?? '') ?>">
                                             </div>
                                         </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Telefone</label>
-                                            <input type="text" name="telefone" class="form-control telefone"
-                                                value="<?= htmlspecialchars($cliente['telefone']) ?>">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Endereço</label>
-                                            <div class="row mb-2">
-                                                <div class="col-md-3">
-                                                    <input type="text" id="cep" name="cep" class="form-control" placeholder="CEP"
-                                                        value="<?= htmlspecialchars($cliente['cep'] ?? '') ?>">
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <input type="text" name="logradouro" class="form-control"
-                                                        placeholder="Rua"
-                                                        value="<?= htmlspecialchars($cliente['logradouro'] ?? '') ?>">
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <input type="text" name="numero" class="form-control"
-                                                        placeholder="Número"
-                                                        value="<?= htmlspecialchars($cliente['numero'] ?? '') ?>">
-                                                </div>
+                                        <div class="row mb-2">
+                                            <div class="col-md-3">
+                                                <input type="text" name="bairro" class="form-control"
+                                                    placeholder="Bairro"
+                                                    value="<?= htmlspecialchars($cliente['bairro'] ?? '') ?>">
                                             </div>
-                                            <div class="row mb-2">
-                                                <div class="col-md-3">
-                                                    <input type="text" name="bairro" class="form-control"
-                                                        placeholder="Bairro"
-                                                        value="<?= htmlspecialchars($cliente['bairro'] ?? '') ?>">
-                                                </div>
-                                                <div class="col-md-5">
-                                                    <input type="text" name="cidade" class="form-control"
-                                                        placeholder="Cidade"
-                                                        value="<?= htmlspecialchars($cliente['cidade'] ?? '') ?>">
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <input type="text" name="estado" class="form-control" placeholder="UF"
-                                                        value="<?= htmlspecialchars($cliente['estado'] ?? '') ?>">
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <input type="text" name="complemento" class="form-control"
-                                                        placeholder="Complemento"
-                                                        value="<?= htmlspecialchars($cliente['complemento'] ?? '') ?>">
-                                                </div>
+                                            <div class="col-md-5">
+                                                <input type="text" name="cidade" class="form-control"
+                                                    placeholder="Cidade"
+                                                    value="<?= htmlspecialchars($cliente['cidade'] ?? '') ?>">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <input type="text" name="estado" class="form-control" placeholder="UF"
+                                                    value="<?= htmlspecialchars($cliente['estado'] ?? '') ?>">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <input type="text" name="complemento" class="form-control"
+                                                    placeholder="Complemento"
+                                                    value="<?= htmlspecialchars($cliente['complemento'] ?? '') ?>">
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="modal-footer">
-                                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">Cancelar</button>
-                                    </div>
-                                </form>
-                            </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cancelar</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
+                </div>
                 <?php endforeach; ?>
 
             </div>
@@ -490,90 +518,90 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <script src="../assets/js/cliente-mask.js"></script>
     <script src="../assets/js/masks.js"></script>
     <script>
-        // Alterna campos CPF/CNPJ no formulário de cadastro
-        $(document).ready(function() {
-            function alternarCamposDocumento() {
-                if ($('#tipoDocumento').val() === 'CPF') {
-                    $('#campoCPF').show().find('input').prop('required', true).prop('disabled', false);
-                    $('#campoCNPJ').hide().find('input').prop('required', false).prop('disabled', true).val('');
+    // Alterna campos CPF/CNPJ no formulário de cadastro
+    $(document).ready(function() {
+        function alternarCamposDocumento() {
+            if ($('#tipoDocumento').val() === 'CPF') {
+                $('#campoCPF').show().find('input').prop('required', true).prop('disabled', false);
+                $('#campoCNPJ').hide().find('input').prop('required', false).prop('disabled', true).val('');
+            } else {
+                $('#campoCPF').hide().find('input').prop('required', false).prop('disabled', true).val('');
+                $('#campoCNPJ').show().find('input').prop('required', true).prop('disabled', false);
+            }
+        }
+        $('#tipoDocumento').change(alternarCamposDocumento);
+        alternarCamposDocumento();
+
+        // Máscara para telefone (fixo e celular)
+        $('.telefone').mask(function(val) {
+            return val.replace(/\D/g, '').length === 11 ? '(00) 00000-0000' : '(00) 0000-00009';
+        }, {
+            onKeyPress: function(val, e, field, options) {
+                var masks = ['(00) 0000-00009', '(00) 00000-0000'];
+                var mask = (val.replace(/\D/g, '').length === 11) ? masks[1] : masks[0];
+                $('.telefone').mask(mask, options);
+            }
+        });
+
+        // --- MODAL DE EDIÇÃO CLIENTE ---
+        $('.tipoDocumentoEditar').each(function() {
+            var select = $(this);
+            var modalId = select.closest('.modal').attr('id').replace('editarCliente', '');
+            var campoCPF = $('#campoCPFEditar' + modalId);
+            var campoCNPJ = $('#campoCNPJEditar' + modalId);
+            var inputCPF = campoCPF.find('input');
+            var inputCNPJ = campoCNPJ.find('input');
+
+            function alternarCamposModal() {
+                if (select.val() === 'CPF') {
+                    campoCPF.show();
+                    campoCNPJ.hide();
+                    inputCPF.prop('required', true).prop('disabled', false);
+                    inputCNPJ.prop('required', false).prop('disabled', true).val('');
+                    inputCPF.mask('000.000.000-00');
                 } else {
-                    $('#campoCPF').hide().find('input').prop('required', false).prop('disabled', true).val('');
-                    $('#campoCNPJ').show().find('input').prop('required', true).prop('disabled', false);
+                    campoCPF.hide();
+                    campoCNPJ.show();
+                    inputCPF.prop('required', false).prop('disabled', true).val('');
+                    inputCNPJ.prop('required', true).prop('disabled', false);
+                    inputCNPJ.mask('00.000.000/0000-00');
                 }
             }
-            $('#tipoDocumento').change(alternarCamposDocumento);
-            alternarCamposDocumento();
-
-            // Máscara para telefone (fixo e celular)
-            $('.telefone').mask(function(val) {
-                return val.replace(/\D/g, '').length === 11 ? '(00) 00000-0000' : '(00) 0000-00009';
-            }, {
-                onKeyPress: function(val, e, field, options) {
-                    var masks = ['(00) 0000-00009', '(00) 00000-0000'];
-                    var mask = (val.replace(/\D/g, '').length === 11) ? masks[1] : masks[0];
-                    $('.telefone').mask(mask, options);
-                }
-            });
-
-            // --- MODAL DE EDIÇÃO CLIENTE ---
-            $('.tipoDocumentoEditar').each(function() {
-                var select = $(this);
-                var modalId = select.closest('.modal').attr('id').replace('editarCliente', '');
-                var campoCPF = $('#campoCPFEditar' + modalId);
-                var campoCNPJ = $('#campoCNPJEditar' + modalId);
-                var inputCPF = campoCPF.find('input');
-                var inputCNPJ = campoCNPJ.find('input');
-
-                function alternarCamposModal() {
-                    if (select.val() === 'CPF') {
-                        campoCPF.show();
-                        campoCNPJ.hide();
-                        inputCPF.prop('required', true).prop('disabled', false);
-                        inputCNPJ.prop('required', false).prop('disabled', true).val('');
-                        inputCPF.mask('000.000.000-00');
-                    } else {
-                        campoCPF.hide();
-                        campoCNPJ.show();
-                        inputCPF.prop('required', false).prop('disabled', true).val('');
-                        inputCNPJ.prop('required', true).prop('disabled', false);
-                        inputCNPJ.mask('00.000.000/0000-00');
-                    }
-                }
-                select.change(alternarCamposModal);
-                alternarCamposModal();
-            });
+            select.change(alternarCamposModal);
+            alternarCamposModal();
         });
+    });
     </script>
 
     <!-- Script para API ViaCEP -->
 
     <script>
-        $(document).ready(function() {
-            $('#cep').mask('00000-000');
+    $(document).ready(function() {
+        $('#cep').mask('00000-000');
 
-            $('#cep').on('blur', function() {
-                let cep = $(this).val().replace(/\D/g, '');
+        $('#cep').on('blur', function() {
+            let cep = $(this).val().replace(/\D/g, '');
 
-                if (cep.length !== 8) {
-                    alert('CEP inválido');
-                    return;
+            if (cep.length !== 8) {
+                alert('CEP inválido');
+                return;
+            }
+
+            $.getJSON(`https://viacep.com.br/ws/${cep}/json/`, function(data) {
+                if (!data.erro) {
+                    $('#logradouro').val(data.logradouro);
+                    $('#bairro').val(data.bairro);
+                    $('#cidade').val(data.localidade);
+                    $('#estado').val(data.uf);
+                    $('#complemento').val(data.complemento);
+                } else {
+                    alert("CEP não encontrado.");
                 }
-
-                $.getJSON(`https://viacep.com.br/ws/${cep}/json/`, function(data) {
-                    if (!data.erro) {
-                        $('#logradouro').val(data.logradouro);
-                        $('#bairro').val(data.bairro);
-                        $('#cidade').val(data.localidade);
-                        $('#estado').val(data.uf);
-                        $('#complemento').val(data.complemento);
-                    } else {
-                        alert("CEP não encontrado.");
-                    }
-                }).fail(function() {
-                    alert("Erro ao consultar o CEP.");
-                });
+            }).fail(function() {
+                alert("Erro ao consultar o CEP.");
             });
         });
+    });
     </script>
 
 </body>

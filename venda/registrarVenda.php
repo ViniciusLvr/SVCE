@@ -57,6 +57,7 @@ require "../config/conexao.php";
                     <div class="col-md-5">
                         <label class="form-label">Produto</label>
                         <select name="produto_id[]" class="form-select" required>
+                            <option value="" selected>Selecione um produto</option>
                             <?php
                             try {
                                 $stmt = $pdo->query("SELECT id, nome FROM produtos ORDER BY nome");
@@ -80,7 +81,8 @@ require "../config/conexao.php";
                             required readonly />
                     </div>
                     <div class="col-md-1">
-                        <button type="button" class="btn btn-danger btn-sm mt-2" onclick="removerItem(this)">Remover</button>
+                        <button type="button" class="btn btn-danger btn-sm mt-2"
+                            onclick="removerItem(this)">Remover</button>
                     </div>
                 </div>
             </div>
@@ -94,12 +96,12 @@ require "../config/conexao.php";
         </form>
     </div>
 
-<script>
+    <script>
     function atualizarPrecoItem(itemDiv) {
         const select = itemDiv.querySelector('select[name="produto_id[]"]');
         const precoInput = itemDiv.querySelector('input[name="preco_unitario[]"]');
         const produtoId = select.value;
-        
+
         if (produtoId) {
             fetch(`../produto/get_preco_produto.php?id=${produtoId}`)
                 .then(res => res.json())
@@ -167,7 +169,7 @@ require "../config/conexao.php";
         let total = 0;
         const quantidades = document.querySelectorAll('.quantidade');
         const precos = document.querySelectorAll('.preco');
-        
+
         for (let i = 0; i < quantidades.length; i++) {
             const qtd = parseFloat(quantidades[i].value) || 0;
             const preco = parseFloat(precos[i].value) || 0;
@@ -180,7 +182,7 @@ require "../config/conexao.php";
     // Inicializando a atualização dos preços dos produtos ao carregar a página
     document.addEventListener('DOMContentLoaded', function() {
         // Seleciona o primeiro produto se não houver seleção
-        document.querySelectorAll('select[name="produto_id[]"]').forEach(function(select){
+        document.querySelectorAll('select[name="produto_id[]"]').forEach(function(select) {
             if (!select.value) {
                 select.selectedIndex = 0;
             }
@@ -188,7 +190,7 @@ require "../config/conexao.php";
         atualizarPrecosTodosItens();
         calcularTotal();
     });
-</script>
+    </script>
 
 </body>
 

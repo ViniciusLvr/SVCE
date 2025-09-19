@@ -27,9 +27,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Buscar usuários
-$stmt = $pdo->query("SELECT id, nome, email, cargo FROM usuarios ORDER BY id ASC");
+// Variáveis de paginação
+$registrosPorPagina = 10;
+$paginaAtual = isset($_GET['pagina']) ? max(1, intval($_GET['pagina'])) : 1;
+$offset = ($paginaAtual - 1) * $registrosPorPagina;
+
+// Buscar usuários paginados
+$stmt = $pdo->prepare("SELECT id, nome, email, cargo FROM usuarios ORDER BY id ASC LIMIT :limit OFFSET :offset");
+$stmt->bindValue(':limit', $registrosPorPagina, PDO::PARAM_INT);
+$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+$stmt->execute();
 $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Contar total de usuários e calcular total de páginas
+$totalUsuarios = $pdo->query("SELECT COUNT(*) FROM usuarios")->fetchColumn();
+$totalPaginas = ceil($totalUsuarios / $registrosPorPagina);
 ?>
 
 <!DOCTYPE html>
@@ -102,6 +114,16 @@ $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php endforeach; ?>
             </tbody>
         </table>
+
+        <nav>
+            <ul class="pagination justify-content-center">
+                <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
+                <li class="page-item <?= ($i == $paginaAtual) ? 'active' : '' ?>">
+                    <a class="page-link" href="?pagina=<?= $i ?>"><?= $i ?></a>
+                </li>
+                <?php endfor; ?>
+            </ul>
+        </nav>
     </div>
 
 </body>
