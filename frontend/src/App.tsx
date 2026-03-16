@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom'
 import ClientesPage from './pages/ClientesPage'
+import LoginPage from './pages/LoginPage'
+import PrivateRoute from './components/PrivateRoute'
+import { AuthProvider, useAuth } from './context/AuthContext'
 import './App.css'
 
 type HealthData = {
@@ -53,19 +56,37 @@ function Home() {
   )
 }
 
-function App() {
+function AppRouter() {
+  const { user, logout } = useAuth()
+
   return (
     <BrowserRouter>
       <div className="nav">
         <Link to="/">Home</Link>
         <Link to="/clientes">Clientes</Link>
+        {!user ? <Link to="/login">Login</Link> : <button onClick={logout}>Logout</button>}
       </div>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/clientes" element={<ClientesPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/clientes"
+          element={
+            <PrivateRoute>
+              <ClientesPage />
+            </PrivateRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   )
 }
 
-export default App
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppRouter />
+    </AuthProvider>
+  )
+}
+

@@ -9,17 +9,17 @@ Projeto migrado do sistema original PHP/MYSQL para arquitetura moderna:
 - `frontend/` - app React+TS
 - `backend/` - API REST em Express
 - `db/CF atualizado.sql` - script SQL com schema + dados originais
-- `docker-compose.yml` - orquestração Docker
-- `legacy-php/` - código PHP arquivado (não mais necessário)
+- `docker-compose.yml` - orquestraï¿½ï¿½o Docker
+- `legacy-php/` - cï¿½digo PHP arquivado (nï¿½o mais necessï¿½rio)
 
 ---
-## Pré-requisitos
+## Prï¿½-requisitos
 - Docker Desktop instalado (Windows) ou Docker Engine (Linux/macOS)
 - Opcional: Node.js se rodar local sem Docker
 
 ---
 ## ?? Rodar tudo com Docker (recomendado)
-1. No diretório raiz do projeto:
+1. No diretï¿½rio raiz do projeto:
    ```powershell
    docker compose up -d --build
    ```
@@ -36,8 +36,18 @@ Projeto migrado do sistema original PHP/MYSQL para arquitetura moderna:
    - Backend: `http://localhost:4000/api/health`
    - Clientes API: `http://localhost:4000/api/clientes`
 
+> O backend cria um usuÃ¡rio admin padrÃ£o na primeira execuÃ§Ã£o:
+> - email: `admin@svce.com`
+> - senha: `admin123`
+> - cargo: `dono`
+>
+> A autenticaÃ§Ã£o usa JWT; endpoints:
+> - `POST /api/auth/login` (email/senha)
+> - `POST /api/auth/register`
+> - `GET /api/auth/me` (token Bearer)
+
 ---
-## Comandos úteis
+## Comandos ï¿½teis
 - Subir dev: `docker compose up -d --build`
 - Parar: `docker compose down`
 - Ver logs backend: `docker compose logs -f backend`
@@ -68,24 +78,24 @@ npm run dev -- --host 0.0.0.0 --port 3000
 ```
 
 ---
-## Migração concluída
-- O código PHP original foi arquivado no diretório `legacy-php/`.
+## Migraï¿½ï¿½o concluï¿½da
+- O cï¿½digo PHP original foi arquivado no diretï¿½rio `legacy-php/`.
 - Funcionalidades principais implementadas (MVP):
   - CRUD clientes (`/api/clientes`)
   - Rotas de health `GET /api/health`
   - UI pages React (`/`, `/clientes`)
 
 ---
-## Próximos passos (em ordem)
-1. Autenticação JWT + role middleware (`dono`, `gerente`, `vendedor`).
-2. CRUD produtos + categorias + fornecedores + usuários.
+## Prï¿½ximos passos (em ordem)
+1. Autenticaï¿½ï¿½o JWT + role middleware (`dono`, `gerente`, `vendedor`).
+2. CRUD produtos + categorias + fornecedores + usuï¿½rios.
 3. Endpoint de vendas (registro de itens + decremento de estoque transacional).
-4. Frontend: telas de produto, venda, usuários e proteção de rotas.
-5. Testes automáticos: Jest+Supertest (backend) e RTL (frontend).
+4. Frontend: telas de produto, venda, usuï¿½rios e proteï¿½ï¿½o de rotas.
+5. Testes automï¿½ticos: Jest+Supertest (backend) e RTL (frontend).
 6. CI/CD: GitHub Actions build/lint/test/deploy.
 
 ---
-## Dica de comando rápido para migrations:
+## Dica de comando rï¿½pido para migrations:
 - Rebuild DB: `docker compose down -v && docker compose up -d --build`
 
 ---

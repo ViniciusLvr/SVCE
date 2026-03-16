@@ -7,7 +7,7 @@ const sequelize = new Sequelize(process.env.DB_NAME || 'svce', process.env.DB_US
   logging: false,
   define: {
     timestamps: false,
-    underscored: true,
+    underscored: false,
   },
 });
 

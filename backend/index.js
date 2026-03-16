@@ -4,12 +4,17 @@ require('dotenv').config();
 
 const { sequelize } = require('./db');
 const { Cliente } = require('./models/Cliente');
+const { Usuario } = require('./models/Usuario');
+const authRoutes = require('./routes/auth');
+const bcrypt = require('bcryptjs');
 
 const app = express();
 const port = process.env.PORT || 4000;
 
 app.use(cors());
 app.use(express.json());
+
+app.use('/api/auth', authRoutes);
 
 app.get('/api', (req, res) => {
   res.json({ status: 'OK', message: 'SVCE API running', version: '0.1.0' });
@@ -98,6 +103,20 @@ async function startup() {
 
     await sequelize.sync();
     console.log('Sincronização de models concluída');
+
+    // Seed admin user if não existe
+    const defaultEmail = process.env.ADMIN_EMAIL || 'admin@svce.com';
+    const defaultPassword = process.env.ADMIN_PASSWORD || 'admin123';
+    const defaultCPF = process.env.ADMIN_CPF || '00000000000';
+
+    let admin = await Usuario.findOne({ where: { email: defaultEmail } });
+    if (!admin) {
+      const hashed = await bcrypt.hash(defaultPassword, 10);
+      admin = await Usuario.create({ nome: 'Administrador', email: defaultEmail, senha: hashed, cpf: defaultCPF, cargo: 'dono' });
+      console.log(`Admin criado: ${defaultEmail}/${defaultPassword}`);
+    } else {
+      console.log(`Admin existente: ${defaultEmail}`);
+    }
 
     app.listen(port, () => {
       console.log(`Backend started at http://localhost:${port}`);
