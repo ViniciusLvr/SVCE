@@ -1,90 +1,95 @@
-# 📦 SVCE - Sistema de Vendas e Controle de Estoque
+# SVCE (React + TypeScript + Node + Docker)
 
-O **SVCE** é um sistema simples de gerenciamento de vendas e controle de estoque, desenvolvido em **PHP** com **MySQL**.  
-Ele permite cadastrar produtos, fornecedores e clientes, além de registrar vendas e acompanhar o estoque em tempo real.
+Projeto migrado do sistema original PHP/MYSQL para arquitetura moderna:
+- **Frontend**: React + TypeScript + Vite
+- **Backend**: Node + Express + Sequelize + MySQL
+- **Infra**: Docker Compose (MySQL, backend, frontend)
 
----
-
-## 🚀 Funcionalidades
-
-- 🔑 **Autenticação de usuários** (login/logout)
-- 👤 **Cadastro e listagem de clientes**
-- 🏢 **Cadastro e listagem de fornecedores**
-- 📦 **Cadastro e controle de produtos**
-  - Prevenção de duplicidade
-  - Atualização de estoque automático
-- 💰 **Gestão de vendas**
-  - Registro de vendas
-  - Registro de itens da venda
-  - Detalhamento e listagem de vendas
-- 📊 **Controle de estoque integrado**
+## Estrutura do repo
+- `frontend/` - app React+TS
+- `backend/` - API REST em Express
+- `db/CF atualizado.sql` - script SQL com schema + dados originais
+- `docker-compose.yml` - orquestra��o Docker
+- `legacy-php/` - c�digo PHP arquivado (n�o mais necess�rio)
 
 ---
-
-## 📂 Estrutura do Projeto
-
-- **categoria.php** → Gerenciamento de categorias  
-- **clientes/**
-  - `clientes.php` → Cadastro e listagem de clientes  
-- **fornecedor/**
-  - `fornecedor.php` → Cadastro e listagem de fornecedores  
-- **produto/**
-  - `produto.php` → Cadastro de produtos  
-  - `get_preco_produto.php` → Consulta de preço de produto  
-- **venda/**
-  - `registrarVenda.php` → Registro de vendas  
-  - `registrarItens.php` → Registro de itens das vendas  
-  - `listarVendas.php` → Listagem de vendas  
-  - `detalhesVenda.php` → Detalhes de cada venda  
-- **public/**
-  - `login.php` → Tela de login  
-  - `logout.php` → Encerrar sessão  
-  - `cadastro.php` → Cadastro de usuário  
-  - `painel.php` → Painel principal  
-- **config/**
-  - `conexao.php` → Configuração de banco de dados  
-  - `auth.php` → Sistema de autenticação  
-- **img/** → Recursos visuais (logo, ícones, etc.)  
-- **README.md** → Documentação do projeto
-
-
+## Pr�-requisitos
+- Docker Desktop instalado (Windows) ou Docker Engine (Linux/macOS)
+- Opcional: Node.js se rodar local sem Docker
 
 ---
-
-## 🛠️ Tecnologias Utilizadas
-
-- **PHP 8+**
-- **MySQL/MariaDB**
-- **HTML5, CSS3**
-- **JavaScript (básico)**
-- **Servidor Apache ou Nginx**
-
----
-
-## ⚙️ Instalação e Uso
-
-1. Clone este repositório:
-
-   git clone https://github.com/ViniciusLvr/SVCE.git
-
-   
-2. Importe o banco de dados (arquivo .sql será fornecido quando o projeto estiver 100%).
-
-3. Configure a conexão no arquivo:
-
-    config/conexao.php
-
-4. Inicie o servidor local (Apache/Nginx) e acesse:
-
-    http://localhost/SVCE/public/login.php
+## ?? Rodar tudo com Docker (recomendado)
+1. No diret�rio raiz do projeto:
+   ```powershell
+   docker compose up -d --build
+   ```
+2. Verificar containers:
+   ```powershell
+   docker compose ps
+   ```
+3. Importar o schema inicial (apenas na primeira vez):
+   ```powershell
+   type .\db\CF atualizado.sql | docker exec -i svce-db-1 sh -c "mysql -uroot -proot123 svce"
+   ```
+4. Acessar:
+   - Frontend: `http://localhost:3000`
+   - Backend: `http://localhost:4000/api/health`
+   - Clientes API: `http://localhost:4000/api/clientes`
 
 ---
-
-👨‍💻 Autores
-Desenvolvido por Vinicius Santos de Oliveira, Walter e Winicius
+## Comandos �teis
+- Subir dev: `docker compose up -d --build`
+- Parar: `docker compose down`
+- Ver logs backend: `docker compose logs -f backend`
+- Ver logs frontend: `docker compose logs -f frontend`
 
 ---
+## Desenvolvimento local sem Docker
+### Backend
+```powershell
+cd backend
+npm install
+npm run dev
+```
+`.env` deve ter:
+```
+PORT=4000
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=root123
+DB_NAME=svce
+JWT_SECRET=your_secret_here
+```
+### Frontend
+```powershell
+cd frontend
+npm install
+npm run dev -- --host 0.0.0.0 --port 3000
+```
 
-📜 Licença
-Este projeto é distribuído sob a licença MIT.
-Sinta-se livre para usar, modificar e compartilhar.
+---
+## Migra��o conclu�da
+- O c�digo PHP original foi arquivado no diret�rio `legacy-php/`.
+- Funcionalidades principais implementadas (MVP):
+  - CRUD clientes (`/api/clientes`)
+  - Rotas de health `GET /api/health`
+  - UI pages React (`/`, `/clientes`)
+
+---
+## Pr�ximos passos (em ordem)
+1. Autentica��o JWT + role middleware (`dono`, `gerente`, `vendedor`).
+2. CRUD produtos + categorias + fornecedores + usu�rios.
+3. Endpoint de vendas (registro de itens + decremento de estoque transacional).
+4. Frontend: telas de produto, venda, usu�rios e prote��o de rotas.
+5. Testes autom�ticos: Jest+Supertest (backend) e RTL (frontend).
+6. CI/CD: GitHub Actions build/lint/test/deploy.
+
+---
+## Dica de comando r�pido para migrations:
+- Rebuild DB: `docker compose down -v && docker compose up -d --build`
+
+---
+## Dicas para portfolio
+- Mostrar before/after: `legacy-php` vs `frontend/backend`.
+- Colocar endpoints no README + Postman collection.
+- Demonstrar ambiente Docker funcionando em 5 min.
